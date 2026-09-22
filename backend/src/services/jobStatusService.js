@@ -2,7 +2,6 @@ const Job = require('../models/Job');
 const Task = require('../models/Task');
 const logger = require('../utils/logger');
 
-// Split out from jobService to avoid a circular require with dispatchEngineService.
 async function recalcJobStatus(jobId) {
   const job = await Job.findById(jobId);
   if (!job) return;
@@ -14,13 +13,13 @@ async function recalcJobStatus(jobId) {
   const statuses = tasks.map((t) => t.status);
   const allTerminalDone = statuses.every((s) => ['completed', 'verified'].includes(s));
   const allCancelled = statuses.every((s) => s === 'cancelled');
-  const anyInProgress = statuses.some((s) => s === 'in_progress');
+  const anyActive = statuses.some((s) => ['in_progress', 'paused'].includes(s));
   const anyAssignedOrOffered = statuses.some((s) => ['assigned', 'offered'].includes(s));
 
   let nextStatus = job.status;
   if (allCancelled) nextStatus = 'cancelled';
   else if (allTerminalDone) nextStatus = 'completed';
-  else if (anyInProgress) nextStatus = 'in_progress';
+  else if (anyActive) nextStatus = 'in_progress';
   else if (anyAssignedOrOffered) nextStatus = 'dispatched';
   else nextStatus = 'ready';
 
@@ -28,6 +27,12 @@ async function recalcJobStatus(jobId) {
     job.status = nextStatus;
     await job.save();
     logger.info(`Job ${jobId} status -> ${nextStatus}`);
+
+    if (nextStatus === 'completed') {
+      // Lazy require avoids a circular import between jobStatusService and settlementService
+      const { generateSettlementForJob } = require('./settlementService');
+      generateSettlementForJob(jobId).catch((err) => logger.error(`Settlement generation failed for job ${jobId}: ${err.message}`));
+    }
   }
 }
 

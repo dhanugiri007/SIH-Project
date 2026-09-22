@@ -3,6 +3,7 @@ import { useJobDetail } from '../hooks/useJobDetail';
 import StatusBadge from '../components/StatusBadge';
 import TaskCard from '../components/TaskCard';
 import JobTimeline from '../components/JobTimeline';
+import SettlementView from '../components/SettlementView';
 import { WorkCellProvider, useWorkCellContext } from '../../workcell/workCellContext';
 import WorkCellBoard from '../../workcell/components/WorkCellBoard';
 
@@ -33,6 +34,7 @@ export default function JobDetailPage() {
   if (!job) return null;
 
   const showLiveCrew = ['dispatched', 'in_progress', 'completed'].includes(job.status);
+  const showSettlement = ['completed'].includes(job.status);
 
   return (
     <div className="min-h-screen bg-white p-6 md:p-10">
@@ -52,6 +54,7 @@ export default function JobDetailPage() {
         </div>
 
         {showLiveCrew && <LiveCrewSection jobId={jobId} />}
+        {showSettlement && <SettlementView jobId={jobId} />}
         <JobTimeline jobId={jobId} />
       </div>
     </div>
