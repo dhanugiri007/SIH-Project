@@ -2,15 +2,16 @@ import { useParams, Link } from 'react-router-dom';
 import { useJobDetail } from '../hooks/useJobDetail';
 import StatusBadge from '../components/StatusBadge';
 import TaskCard from '../components/TaskCard';
+import JobTimeline from '../components/JobTimeline';
 import { WorkCellProvider, useWorkCellContext } from '../../workcell/workCellContext';
 import WorkCellBoard from '../../workcell/components/WorkCellBoard';
 
 function LiveCrewInner() {
-  const { workCell, presentUserIds, loading, error } = useWorkCellContext();
+  const { workCell, presentUserIds, liveLocations, loading, error } = useWorkCellContext();
   if (loading || error || !workCell) return null;
   return (
     <div className="mt-6">
-      <WorkCellBoard workCell={workCell} presentUserIds={presentUserIds} />
+      <WorkCellBoard workCell={workCell} presentUserIds={presentUserIds} liveLocations={liveLocations} />
     </div>
   );
 }
@@ -51,6 +52,7 @@ export default function JobDetailPage() {
         </div>
 
         {showLiveCrew && <LiveCrewSection jobId={jobId} />}
+        <JobTimeline jobId={jobId} />
       </div>
     </div>
   );

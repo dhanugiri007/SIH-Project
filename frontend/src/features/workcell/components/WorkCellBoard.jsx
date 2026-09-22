@@ -1,9 +1,9 @@
 import PresenceDot from './PresenceDot';
 import StatusBadge from '../../jobRequest/components/StatusBadge';
+import WorkerLocationMap from './WorkerLocationMap';
 
-export default function WorkCellBoard({ workCell, presentUserIds }) {
+export default function WorkCellBoard({ workCell, presentUserIds, liveLocations = {} }) {
   if (!workCell) return null;
-
   const activeMembers = workCell.members.filter((m) => m.status === 'active');
 
   return (
@@ -18,16 +18,20 @@ export default function WorkCellBoard({ workCell, presentUserIds }) {
       <div className="space-y-3">
         {activeMembers.map((member) => {
           const isOnline = presentUserIds.includes(String(member.worker._id));
+          const loc = liveLocations[String(member.worker._id)];
           return (
-            <div key={member.task._id} className="flex items-center justify-between border border-gray-100 rounded-lg p-3">
-              <div className="flex items-center gap-3">
-                <PresenceDot online={isOnline} />
-                <div>
-                  <p className="font-medium text-gray-900 text-sm">{member.worker.name}</p>
-                  <p className="text-xs text-gray-400">{member.task.title}</p>
+            <div key={member.task._id} className="border border-gray-100 rounded-lg p-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <PresenceDot online={isOnline} />
+                  <div>
+                    <p className="font-medium text-gray-900 text-sm">{member.worker.name}</p>
+                    <p className="text-xs text-gray-400">{member.task.title}</p>
+                  </div>
                 </div>
+                <StatusBadge status={member.task.status} />
               </div>
-              <StatusBadge status={member.task.status} />
+              {member.task.status === 'in_progress' && loc && <WorkerLocationMap lat={loc.lat} lng={loc.lng} />}
             </div>
           );
         })}

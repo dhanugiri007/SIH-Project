@@ -4,16 +4,17 @@ const TRANSITIONS = {
   pending: ['assigned', 'cancelled'],
   offered: ['assigned', 'pending', 'cancelled'],
   assigned: ['in_progress', 'cancelled'],
-  in_progress: ['completed', 'cancelled'],
+  in_progress: ['paused', 'completed', 'cancelled'],
+  paused: ['in_progress', 'cancelled'],
   completed: ['verified'],
   verified: [],
   cancelled: [],
 };
 
 const ROLE_PERMISSIONS = {
-  worker: ['in_progress', 'completed'],
+  worker: ['in_progress', 'paused', 'completed'],
   customer: ['verified', 'cancelled'],
-  cooperativeAdmin: ['assigned', 'in_progress', 'completed', 'verified', 'cancelled', 'pending'],
+  cooperativeAdmin: ['assigned', 'in_progress', 'paused', 'completed', 'verified', 'cancelled', 'pending'],
 };
 
 function assertValidTransition(currentStatus, nextStatus) {

@@ -3,6 +3,7 @@ const ApiError = require('../utils/ApiError');
 const { assertValidTransition, assertRoleCanPerform } = require('../utils/taskStateMachine');
 const { recalcJobStatus } = require('./jobStatusService');
 const { notifyTaskUpdate } = require('./workCellService');
+const { logEvent } = require('./timelineService');
 
 async function getTasksByJob(jobId) {
   return Task.find({ job: jobId }).populate('dependsOn', 'title tempId status').populate('assignedWorker', 'name phone');
@@ -48,12 +49,13 @@ function assertActorOwnsTask(task, actorUser) {
 
 async function updateTaskStatus(taskId, actorUser, nextStatus) {
   const task = await getTaskById(taskId);
+  const fromStatus = task.status;
 
   assertRoleCanPerform(actorUser.role, nextStatus);
   assertActorOwnsTask(task, actorUser);
-  assertValidTransition(task.status, nextStatus);
+  assertValidTransition(fromStatus, nextStatus);
 
-  if (nextStatus === 'in_progress') {
+  if (nextStatus === 'in_progress' && fromStatus !== 'paused') {
     await assertDependenciesSatisfied(task);
   }
 
@@ -62,9 +64,8 @@ async function updateTaskStatus(taskId, actorUser, nextStatus) {
   await task.save();
 
   await recalcJobStatus(task.job._id);
-
-  // Push the change live to anyone watching this job's WorkCell (customer + crew).
   await notifyTaskUpdate(task.job._id, task._id, nextStatus);
+  await logEvent({ jobId: task.job._id, taskId: task._id, actorId: actorUser._id, event: 'status_changed', fromStatus, toStatus: nextStatus });
 
   return getTaskById(task._id);
 }

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const TASK_TYPES = ['cleaning', 'electrical', 'plumbing', 'carpentry', 'painting', 'appliance_repair', 'general'];
-const TASK_STATUSES = ['pending', 'offered', 'assigned', 'in_progress', 'completed', 'verified', 'cancelled'];
+const TASK_STATUSES = ['pending', 'offered', 'assigned', 'in_progress', 'paused', 'completed', 'verified', 'cancelled'];
 
 const dispatchExplanationSchema = new mongoose.Schema(
   {

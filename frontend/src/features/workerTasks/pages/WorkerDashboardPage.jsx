@@ -1,14 +1,32 @@
 import { useMemo } from 'react';
 import { WorkerTasksProvider, useWorkerTasksContext } from '../workerTasksContext';
 import { useJoinWorkCells } from '../../workcell/hooks/useJoinWorkCells';
+import { useLocationBroadcast } from '../hooks/useLocationBroadcast';
+import { useSocket } from '../../../shared/hooks/useSocket';
+import { workCellApiService } from '../../workcell/service/workCellApiService';
+import { useEffect, useState } from 'react';
 import AvailabilityToggle from '../components/AvailabilityToggle';
 import WorkerTaskCard from '../components/WorkerTaskCard';
 
 function WorkerDashboardInner() {
   const { tasks, loading, isOnline, toggle, startTask, completeTask, reportIssue } = useWorkerTasksContext();
+  const { socket, connected } = useSocket();
+  const [activeWorkCellId, setActiveWorkCellId] = useState(null);
 
   const activeJobIds = useMemo(() => [...new Set(tasks.filter((t) => t.job?._id).map((t) => t.job._id))], [tasks]);
   useJoinWorkCells(activeJobIds);
+
+  const inProgressTask = tasks.find((t) => t.status === 'in_progress');
+
+  useEffect(() => {
+    if (!inProgressTask?.job?._id) {
+      setActiveWorkCellId(null);
+      return;
+    }
+    workCellApiService.getByJob(inProgressTask.job._id).then((wc) => setActiveWorkCellId(wc?._id || null)).catch(() => {});
+  }, [inProgressTask?.job?._id]);
+
+  useLocationBroadcast(socket, connected, activeWorkCellId, Boolean(inProgressTask));
 
   return (
     <div className="min-h-screen bg-white p-6 md:p-10">
