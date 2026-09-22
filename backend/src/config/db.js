@@ -5,7 +5,7 @@ const logger = require('../utils/logger');
 async function connectDB() {
   try {
     await mongoose.connect(env.mongoUri);
-    logger.info('MongoDB connected');
+    logger.info('MongoDB connected (Atlas)');
   } catch (err) {
     logger.error(`MongoDB connection failed: ${err.message}`);
     process.exit(1);

@@ -1,17 +1,15 @@
 const ApiError = require('./ApiError');
 
-// Allowed transitions per current status
 const TRANSITIONS = {
   pending: ['assigned', 'cancelled'],
-  offered: ['assigned', 'pending', 'cancelled'], // declined offer -> back to pending
+  offered: ['assigned', 'pending', 'cancelled'],
   assigned: ['in_progress', 'cancelled'],
   in_progress: ['completed', 'cancelled'],
   completed: ['verified'],
-  verified: [], // terminal
-  cancelled: [], // terminal
+  verified: [],
+  cancelled: [],
 };
 
-// Who is allowed to perform which transition (role-level, refined further in service)
 const ROLE_PERMISSIONS = {
   worker: ['in_progress', 'completed'],
   customer: ['verified', 'cancelled'],

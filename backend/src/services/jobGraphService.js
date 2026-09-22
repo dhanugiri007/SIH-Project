@@ -51,15 +51,9 @@ async function generateJobGraph(rawRequestText) {
 
   const body = {
     contents: [
-      {
-        role: 'user',
-        parts: [{ text: `${SYSTEM_INSTRUCTION}\n\nCustomer request:\n"""${rawRequestText}"""` }],
-      },
+      { role: 'user', parts: [{ text: `${SYSTEM_INSTRUCTION}\n\nCustomer request:\n"""${rawRequestText}"""` }] },
     ],
-    generationConfig: {
-      temperature: 0.2,
-      responseMimeType: 'application/json',
-    },
+    generationConfig: { temperature: 0.2, responseMimeType: 'application/json' },
   };
 
   let response;
@@ -83,9 +77,7 @@ async function generateJobGraph(rawRequestText) {
   const data = await response.json();
   const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-  if (!rawText) {
-    throw new ApiError(502, 'AI service returned an empty response');
-  }
+  if (!rawText) throw new ApiError(502, 'AI service returned an empty response');
 
   let parsed;
   try {
@@ -99,7 +91,6 @@ async function generateJobGraph(rawRequestText) {
     throw new ApiError(502, 'AI service did not return any tasks');
   }
 
-  // Normalize unknown types to 'general' defensively
   parsed.tasks = parsed.tasks.map((t) => ({
     ...t,
     type: TASK_TYPES.includes(t.type) ? t.type : 'general',

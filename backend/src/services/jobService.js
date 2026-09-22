@@ -3,8 +3,9 @@ const Task = require('../models/Task');
 const ApiError = require('../utils/ApiError');
 const logger = require('../utils/logger');
 const { generateJobGraph } = require('./jobGraphService');
+const { dispatchTasksForJob } = require('./dispatchEngineService');
 
-async function createJobFromRequest(customerId, rawRequestText, inputMode = 'text') {
+async function createJobFromRequest(customerId, { rawRequestText, inputMode = 'text', serviceAddress, serviceLocation }) {
   if (!rawRequestText || !rawRequestText.trim()) {
     throw new ApiError(400, 'rawRequestText is required');
   }
@@ -14,6 +15,10 @@ async function createJobFromRequest(customerId, rawRequestText, inputMode = 'tex
     rawRequestText,
     inputMode,
     status: 'processing',
+    serviceAddress: serviceAddress || '',
+    serviceLocation: serviceLocation?.coordinates
+      ? { type: 'Point', coordinates: serviceLocation.coordinates }
+      : undefined,
   });
 
   let graph;
@@ -26,7 +31,6 @@ async function createJobFromRequest(customerId, rawRequestText, inputMode = 'tex
     throw err;
   }
 
-  // Pass 1: create all Task docs, capture tempId -> real _id mapping
   const tempIdToRealId = new Map();
   const createdTasks = [];
 
@@ -41,17 +45,14 @@ async function createJobFromRequest(customerId, rawRequestText, inputMode = 'tex
       requiredSkills: t.requiredSkills,
       estimatedDurationMinutes: t.estimatedDurationMinutes || 60,
       sequenceIndex: i,
-      dependsOn: [], // resolved in pass 2
+      dependsOn: [],
     });
     tempIdToRealId.set(t.tempId, task._id);
     createdTasks.push({ doc: task, dependsOnTemp: t.dependsOn });
   }
 
-  // Pass 2: resolve dependsOn tempIds -> real ObjectIds
   for (const { doc, dependsOnTemp } of createdTasks) {
-    const resolvedDeps = dependsOnTemp
-      .map((tempId) => tempIdToRealId.get(tempId))
-      .filter(Boolean);
+    const resolvedDeps = dependsOnTemp.map((tempId) => tempIdToRealId.get(tempId)).filter(Boolean);
     doc.dependsOn = resolvedDeps;
     await doc.save();
   }
@@ -63,16 +64,28 @@ async function createJobFromRequest(customerId, rawRequestText, inputMode = 'tex
 
   logger.info(`Job graph created: ${job._id} with ${createdTasks.length} tasks`);
 
+  try {
+    await dispatchTasksForJob(job._id);
+  } catch (err) {
+    logger.error(`Auto-dispatch failed for job ${job._id}: ${err.message}`);
+  }
+
   return Job.findById(job._id).populate({
     path: 'tasks',
-    populate: { path: 'dependsOn', select: 'title tempId' },
+    populate: [
+      { path: 'dependsOn', select: 'title tempId status' },
+      { path: 'assignedWorker', select: 'name phone' },
+    ],
   });
 }
 
 async function getJobById(jobId, customerId) {
   const job = await Job.findOne({ _id: jobId, customer: customerId }).populate({
     path: 'tasks',
-    populate: { path: 'dependsOn', select: 'title tempId' },
+    populate: [
+      { path: 'dependsOn', select: 'title tempId status' },
+      { path: 'assignedWorker', select: 'name phone' },
+    ],
   });
   if (!job) throw new ApiError(404, 'Job not found');
   return job;

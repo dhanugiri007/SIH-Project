@@ -27,9 +27,7 @@ export default function JobGraphPreview({ job }) {
             {task.description && <p className="text-sm text-gray-500 mb-2">{task.description}</p>}
             <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400">
               <span>⏱ {task.estimatedDurationMinutes} min</span>
-              {task.requiredSkills?.length > 0 && (
-                <span>🛠 {task.requiredSkills.join(', ')}</span>
-              )}
+              {task.requiredSkills?.length > 0 && <span>🛠 {task.requiredSkills.join(', ')}</span>}
               {task.dependsOn?.length > 0 && (
                 <span className="text-amber-600">
                   ⛓ depends on: {task.dependsOn.map((d) => taskById[d._id]?.title || d.title).join(', ')}

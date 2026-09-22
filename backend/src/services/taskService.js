@@ -1,8 +1,7 @@
 const Task = require('../models/Task');
-const Job = require('../models/Job');
 const ApiError = require('../utils/ApiError');
 const { assertValidTransition, assertRoleCanPerform } = require('../utils/taskStateMachine');
-const { recalcJobStatus } = require('./jobService');
+const { recalcJobStatus } = require('./jobStatusService');
 
 async function getTasksByJob(jobId) {
   return Task.find({ job: jobId }).populate('dependsOn', 'title tempId status').populate('assignedWorker', 'name phone');
@@ -17,18 +16,19 @@ async function getTaskById(taskId) {
   return task;
 }
 
-// Dependency gate: all dependsOn tasks must be completed/verified before this task can start
+async function getMyTasks(workerId) {
+  return Task.find({ assignedWorker: workerId, status: { $ne: 'cancelled' } })
+    .populate({ path: 'job', select: 'title serviceAddress customer', populate: { path: 'customer', select: 'name phone' } })
+    .populate('dependsOn', 'title status')
+    .sort({ createdAt: -1 });
+}
+
 async function assertDependenciesSatisfied(task) {
   if (!task.dependsOn || task.dependsOn.length === 0) return;
-
   const deps = await Task.find({ _id: { $in: task.dependsOn } }).select('title status');
   const unresolved = deps.filter((d) => !['completed', 'verified'].includes(d.status));
-
   if (unresolved.length > 0) {
-    throw new ApiError(
-      400,
-      `Task is blocked by incomplete dependencies: ${unresolved.map((d) => d.title).join(', ')}`
-    );
+    throw new ApiError(400, `Task is blocked by incomplete dependencies: ${unresolved.map((d) => d.title).join(', ')}`);
   }
 }
 
@@ -52,7 +52,6 @@ async function updateTaskStatus(taskId, actorUser, nextStatus) {
   assertActorOwnsTask(task, actorUser);
   assertValidTransition(task.status, nextStatus);
 
-  // Gate the actual start of work behind dependency completion
   if (nextStatus === 'in_progress') {
     await assertDependenciesSatisfied(task);
   }
@@ -66,8 +65,6 @@ async function updateTaskStatus(taskId, actorUser, nextStatus) {
   return getTaskById(task._id);
 }
 
-// Temporary manual-assign endpoint for cooperativeAdmin, used until Flow 4 dispatch engine
-// takes over automatic skill/availability/location-aware assignment.
 async function manualAssignWorker(taskId, workerUserId) {
   const task = await Task.findById(taskId);
   if (!task) throw new ApiError(404, 'Task not found');
@@ -82,9 +79,4 @@ async function manualAssignWorker(taskId, workerUserId) {
   return getTaskById(task._id);
 }
 
-module.exports = {
-  getTasksByJob,
-  getTaskById,
-  updateTaskStatus,
-  manualAssignWorker,
-};
+module.exports = { getTasksByJob, getTaskById, getMyTasks, updateTaskStatus, manualAssignWorker };

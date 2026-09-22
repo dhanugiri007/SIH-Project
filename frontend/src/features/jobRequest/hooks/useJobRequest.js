@@ -6,12 +6,12 @@ export function useJobRequest() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const submitRequest = async (rawRequestText, inputMode = 'text') => {
+  const submitRequest = async (payload) => {
     setSubmitting(true);
     setError('');
     setJob(null);
     try {
-      const created = await jobRequestService.createJob({ rawRequestText, inputMode });
+      const created = await jobRequestService.createJob(payload);
       setJob(created);
       return created;
     } catch (err) {
