@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import StatusBadge from '../../jobRequest/components/StatusBadge';
 import TaskTypeBadge from '../../jobRequest/components/TaskTypeBadge';
-import ExplanationPanel from './ExplainationPanel';
+import ExplanationPanel from  './ExplainationPanel';
+import ReportIssueButton from './ReportIssueButton';
 
 const isBlocked = (task) =>
   task.status === 'assigned' && task.dependsOn?.some((d) => !['completed', 'verified'].includes(d.status));
 
-export default function WorkerTaskCard({ task, onStart, onComplete }) {
+export default function WorkerTaskCard({ task, onStart, onComplete, onReportIssue }) {
   const [showWhy, setShowWhy] = useState(false);
   const blocked = isBlocked(task);
 
@@ -22,7 +23,6 @@ export default function WorkerTaskCard({ task, onStart, onComplete }) {
 
       <p className="text-sm text-gray-500 mb-1">{task.job?.title}</p>
       <p className="text-xs text-gray-400 mb-2">📍 {task.job?.serviceAddress || 'Address not provided'}</p>
-
       {task.job?.customer && (
         <p className="text-xs text-gray-400 mb-2">👤 {task.job.customer.name} · {task.job.customer.phone}</p>
       )}
@@ -38,7 +38,7 @@ export default function WorkerTaskCard({ task, onStart, onComplete }) {
       </button>
       {showWhy && <ExplanationPanel explanation={task.dispatchExplanation} />}
 
-      <div className="flex gap-2 mt-2">
+      <div className="flex gap-2 mt-2 flex-wrap">
         {task.status === 'assigned' && !blocked && (
           <button onClick={() => onStart(task._id)} className="text-xs px-3 py-1.5 rounded-full bg-indigo-600 text-white hover:bg-indigo-700">
             Start Task
@@ -48,6 +48,9 @@ export default function WorkerTaskCard({ task, onStart, onComplete }) {
           <button onClick={() => onComplete(task._id)} className="text-xs px-3 py-1.5 rounded-full bg-emerald-600 text-white hover:bg-emerald-700">
             Mark Complete
           </button>
+        )}
+        {['assigned', 'in_progress'].includes(task.status) && (
+          <ReportIssueButton taskId={task._id} onReport={onReportIssue} />
         )}
       </div>
     </div>

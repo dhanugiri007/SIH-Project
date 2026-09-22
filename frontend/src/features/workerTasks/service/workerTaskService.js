@@ -6,4 +6,6 @@ export const workerTaskService = {
   updateAvailability: (isOnline) =>
     api.patch('/workers/me/profile', { availability: { isOnline } }).then((r) => r.data.data),
   getMyProfile: () => api.get('/workers/me/profile').then((r) => r.data.data),
+  reportFailure: (taskId, reason) =>
+    api.post(`/tasks/${taskId}/report-failure`, { reason }).then((r) => r.data.data),
 };

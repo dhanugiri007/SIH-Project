@@ -21,8 +21,8 @@ function ratingScore(ratingAvg) {
   return Math.round(Math.min(RATING_MAX_POINTS, (ratingAvg || 0) * 2));
 }
 
-async function buildScoredCandidates(task, job) {
-  const eligible = await getEligibleWorkersForTask(task, job.serviceLocation);
+async function buildScoredCandidates(task, job, excludeWorkerIds) {
+  const eligible = await getEligibleWorkersForTask(task, job.serviceLocation, excludeWorkerIds);
   const candidates = [];
   for (const { profile, distanceKm } of eligible) {
     const fairness = await computeFairnessScore(profile.user._id);
@@ -47,7 +47,7 @@ async function buildScoredCandidates(task, job) {
   return candidates;
 }
 
-async function dispatchTasksForJob(jobId, { taskIds } = {}) {
+async function dispatchTasksForJob(jobId, { taskIds, excludeWorkerIds = [] } = {}) {
   const job = await Job.findById(jobId);
   if (!job) throw new Error('Job not found for dispatch');
 
@@ -64,7 +64,7 @@ async function dispatchTasksForJob(jobId, { taskIds } = {}) {
   const solverTasks = [];
 
   for (const task of pendingTasks) {
-    const candidates = await buildScoredCandidates(task, job);
+    const candidates = await buildScoredCandidates(task, job, excludeWorkerIds);
     candidateMap.set(String(task._id), candidates);
     solverTasks.push({
       taskId: String(task._id),
@@ -137,11 +137,7 @@ async function dispatchTasksForJob(jobId, { taskIds } = {}) {
   }
 
   await recalcJobStatus(jobId);
-
-  // Form/refresh the WorkCell now that assignments exist for this job.
-  if (dispatched.length > 0) {
-    await syncWorkCellForJob(jobId);
-  }
+  if (dispatched.length > 0) await syncWorkCellForJob(jobId);
 
   logger.info(`Dispatch complete for job ${jobId}: ${dispatched.length} assigned, ${unfilled.length} unfilled`);
   return { dispatched, unfilled };

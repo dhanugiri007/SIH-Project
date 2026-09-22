@@ -1,7 +1,7 @@
 const WorkerProfile = require('../models/WorkerProfile');
 const Task = require('../models/Task');
 
-const MAX_DISTANCE_KM = 50; // workers beyond this are not considered eligible
+const MAX_DISTANCE_KM = 50;
 
 function haversineKm([lng1, lat1], [lng2, lat2]) {
   const R = 6371;
@@ -13,11 +13,12 @@ function haversineKm([lng1, lat1], [lng2, lat2]) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-// Returns eligible worker profiles for a task with hard-filters applied:
-// skill match, active/online availability, remaining capacity, distance cutoff.
-async function getEligibleWorkersForTask(task, jobServiceLocation) {
+// excludeWorkerIds lets self-healing re-dispatch a task without re-offering it
+// to the same worker who just failed/dropped it.
+async function getEligibleWorkersForTask(task, jobServiceLocation, excludeWorkerIds = []) {
   const candidates = await WorkerProfile.find({
     'availability.isOnline': true,
+    user: { $nin: excludeWorkerIds },
     ...(task.requiredSkills.length > 0 ? { skills: { $all: task.requiredSkills } } : {}),
   }).populate('user', 'name isActive');
 

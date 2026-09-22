@@ -24,5 +24,10 @@ export function useMyTasks() {
     await refresh();
   };
 
-  return { tasks, loading, startTask, completeTask, refresh };
+  const reportIssue = async (taskId, reason) => {
+    await workerTaskService.reportFailure(taskId, reason);
+    await refresh();
+  };
+
+  return { tasks, loading, startTask, completeTask, reportIssue, refresh };
 }

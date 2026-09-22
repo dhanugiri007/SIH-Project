@@ -5,12 +5,9 @@ import AvailabilityToggle from '../components/AvailabilityToggle';
 import WorkerTaskCard from '../components/WorkerTaskCard';
 
 function WorkerDashboardInner() {
-  const { tasks, loading, isOnline, toggle, startTask, completeTask } = useWorkerTasksContext();
+  const { tasks, loading, isOnline, toggle, startTask, completeTask, reportIssue } = useWorkerTasksContext();
 
-  const activeJobIds = useMemo(
-    () => [...new Set(tasks.filter((t) => t.job?._id).map((t) => t.job._id))],
-    [tasks]
-  );
+  const activeJobIds = useMemo(() => [...new Set(tasks.filter((t) => t.job?._id).map((t) => t.job._id))], [tasks]);
   useJoinWorkCells(activeJobIds);
 
   return (
@@ -23,14 +20,12 @@ function WorkerDashboardInner() {
 
         {loading && <p className="text-gray-500">Loading...</p>}
         {!loading && tasks.length === 0 && (
-          <p className="text-gray-400">
-            No tasks assigned yet. {!isOnline && 'Go online to become eligible for new dispatch.'}
-          </p>
+          <p className="text-gray-400">No tasks assigned yet. {!isOnline && 'Go online to become eligible for new dispatch.'}</p>
         )}
 
         <div className="space-y-3">
           {tasks.map((task) => (
-            <WorkerTaskCard key={task._id} task={task} onStart={startTask} onComplete={completeTask} />
+            <WorkerTaskCard key={task._id} task={task} onStart={startTask} onComplete={completeTask} onReportIssue={reportIssue} />
           ))}
         </div>
       </div>

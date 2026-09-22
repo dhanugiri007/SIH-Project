@@ -1,6 +1,7 @@
 const asyncHandler = require('../utils/asyncHandler');
 const ApiError = require('../utils/ApiError');
 const taskService = require('../services/taskService');
+const { reopenAndReassignTask } = require('../services/selfHealingService');
 const Job = require('../models/Job');
 
 const listTasksForJob = asyncHandler(async (req, res) => {
@@ -36,4 +37,20 @@ const manualAssign = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: task });
 });
 
-module.exports = { listTasksForJob, getMyTasks, getTask, updateStatus, manualAssign };
+// @route POST /api/tasks/:id/report-failure  (worker self-reports they can't complete a task)
+const reportFailure = asyncHandler(async (req, res) => {
+  const { reason } = req.body;
+  const task = await taskService.getTaskById(req.params.id);
+
+  if (String(task.assignedWorker?._id) !== String(req.user._id)) {
+    throw new ApiError(403, 'You are not assigned to this task');
+  }
+
+  const result = await reopenAndReassignTask(task._id, {
+    failedWorkerId: req.user._id,
+    reason: reason || 'Worker reported unable to complete',
+  });
+  res.status(200).json({ success: true, data: result });
+});
+
+module.exports = { listTasksForJob, getMyTasks, getTask, updateStatus, manualAssign, reportFailure };
