@@ -1,4 +1,5 @@
 const Task = require('../models/Task');
+const CompletionProof = require('../models/CompletionProof.js');
 const ApiError = require('../utils/ApiError');
 const { assertValidTransition, assertRoleCanPerform } = require('../utils/taskStateMachine');
 const { recalcJobStatus } = require('./jobStatusService');
@@ -57,6 +58,11 @@ async function updateTaskStatus(taskId, actorUser, nextStatus) {
 
   if (nextStatus === 'in_progress' && fromStatus !== 'paused') {
     await assertDependenciesSatisfied(task);
+  }
+
+  if (nextStatus === 'completed') {
+    const proof = await CompletionProof.findOne({ task: taskId });
+    if (!proof) throw new ApiError(400, 'Upload completion proof (photo/video) before marking this task complete');
   }
 
   task.status = nextStatus;

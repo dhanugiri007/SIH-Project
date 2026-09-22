@@ -1,15 +1,30 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import StatusBadge from '../../jobRequest/components/StatusBadge';
 import TaskTypeBadge from '../../jobRequest/components/TaskTypeBadge';
-import ExplanationPanel from  './ExplainationPanel';
+import ExplanationPanel from './ExplainationPanel';
 import ReportIssueButton from './ReportIssueButton';
+import CompletionProofCapture from './CompletionProofCapture';
+import { completionProofService } from '../service/completionProofService';
 
 const isBlocked = (task) =>
   task.status === 'assigned' && task.dependsOn?.some((d) => !['completed', 'verified'].includes(d.status));
 
 export default function WorkerTaskCard({ task, onStart, onComplete, onReportIssue }) {
   const [showWhy, setShowWhy] = useState(false);
+  const [proof, setProof] = useState(null);
+  const [checkedProof, setCheckedProof] = useState(false);
   const blocked = isBlocked(task);
+
+  useEffect(() => {
+    if (task.status === 'in_progress') {
+      completionProofService.getForTask(task._id).then((p) => {
+        setProof(p);
+        setCheckedProof(true);
+      });
+    } else {
+      setCheckedProof(true);
+    }
+  }, [task._id, task.status]);
 
   return (
     <div className={`border rounded-lg p-4 ${blocked ? 'border-amber-200 bg-amber-50/40' : 'border-gray-100'}`}>
@@ -38,13 +53,20 @@ export default function WorkerTaskCard({ task, onStart, onComplete, onReportIssu
       </button>
       {showWhy && <ExplanationPanel explanation={task.dispatchExplanation} />}
 
-      <div className="flex gap-2 mt-2 flex-wrap">
+      {task.status === 'in_progress' && checkedProof && !proof && (
+        <CompletionProofCapture taskId={task._id} onUploaded={setProof} />
+      )}
+      {task.status === 'in_progress' && proof && (
+        <p className="text-xs text-emerald-600 mt-2">✓ Proof uploaded — ready to mark complete</p>
+      )}
+
+      <div className="flex gap-2 mt-3 flex-wrap">
         {task.status === 'assigned' && !blocked && (
           <button onClick={() => onStart(task._id)} className="text-xs px-3 py-1.5 rounded-full bg-indigo-600 text-white hover:bg-indigo-700">
             Start Task
           </button>
         )}
-        {task.status === 'in_progress' && (
+        {task.status === 'in_progress' && proof && (
           <button onClick={() => onComplete(task._id)} className="text-xs px-3 py-1.5 rounded-full bg-emerald-600 text-white hover:bg-emerald-700">
             Mark Complete
           </button>

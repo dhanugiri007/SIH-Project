@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import TaskTypeBadge from './TaskTypeBadge';
 import StatusBadge from './StatusBadge';
+import { resolveFileUrl } from '../../../shared/utils/fileUrl';
+import api from '../../../shared/utils/api';
 
 const canVerify = (task) => task.status === 'completed';
 const canCancel = (task) => ['pending', 'offered', 'assigned'].includes(task.status);
@@ -9,8 +11,15 @@ const isBlocked = (task) =>
 
 export default function TaskCard({ task, onVerify, onCancel }) {
   const [showWhy, setShowWhy] = useState(false);
+  const [proof, setProof] = useState(null);
   const blocked = isBlocked(task);
   const exp = task.dispatchExplanation;
+
+  useEffect(() => {
+    if (['completed', 'verified'].includes(task.status)) {
+      api.get(`/completion-proofs/task/${task._id}`).then((r) => setProof(r.data.data)).catch(() => {});
+    }
+  }, [task._id, task.status]);
 
   return (
     <div className={`border rounded-lg p-3 transition-colors ${blocked ? 'border-amber-200 bg-amber-50/40' : 'border-gray-100 hover:border-indigo-200'}`}>
@@ -49,6 +58,16 @@ export default function TaskCard({ task, onVerify, onCancel }) {
             <span>Rating: {exp.ratingScore}</span>
             <span className="font-semibold">Total: {exp.totalScore}</span>
           </div>
+        </div>
+      )}
+
+      {proof && (
+        <div className="mb-2">
+          {proof.fileType === 'video' ? (
+            <video src={resolveFileUrl(proof.fileUrl)} controls className="w-full rounded-lg max-h-56" />
+          ) : (
+            <img src={resolveFileUrl(proof.fileUrl)} alt="Completion proof" className="w-full rounded-lg max-h-56 object-cover" />
+          )}
         </div>
       )}
 

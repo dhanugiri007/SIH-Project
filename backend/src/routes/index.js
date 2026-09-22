@@ -6,6 +6,7 @@ const jobRoutes = require('./jobRoutes');
 const taskRoutes = require('./taskRoutes');
 const dispatchRoutes = require('./dispatchRoutes');
 const workCellRoutes = require('./workCellRoutes');
+const completionProofRoutes = require('./completionProofRoutes');
 
 const router = express.Router();
 
@@ -16,5 +17,6 @@ router.use('/jobs', jobRoutes);
 router.use('/tasks', taskRoutes);
 router.use('/dispatch', dispatchRoutes);
 router.use('/workcells', workCellRoutes);
+router.use('/completion-proofs', completionProofRoutes);
 
 module.exports = router;
