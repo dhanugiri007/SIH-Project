@@ -3,15 +3,16 @@ const http = require('http');
 const app = require('./src/app');
 const env = require('./src/config/env');
 const connectDB = require('./src/config/db');
-require('./src/config/redis'); // initializes connection
+require('./src/config/redis');
 const initSockets = require('./src/sockets');
+const socketService = require('./src/services/socketService');
 const logger = require('./src/utils/logger');
 
 const httpServer = http.createServer(app);
 
-// Attach socket.io and expose io on app so controllers/services can emit events later
 const io = initSockets(httpServer);
 app.set('io', io);
+socketService.setIO(io); // lets any service emit live events without importing app.js
 
 connectDB().then(() => {
   httpServer.listen(env.port, () => {

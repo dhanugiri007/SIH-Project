@@ -2,13 +2,13 @@ const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 const env = require('../config/env');
 const logger = require('../utils/logger');
+const registerWorkCellHandlers = require('../services/workerCellHandlers');
 
 function initSockets(httpServer) {
   const io = new Server(httpServer, {
     cors: { origin: env.clientOrigin, credentials: true },
   });
 
-  // Auth middleware for sockets — every client must send a valid JWT
   io.use((socket, next) => {
     try {
       const token = socket.handshake.auth?.token;
@@ -23,9 +23,9 @@ function initSockets(httpServer) {
 
   io.on('connection', (socket) => {
     logger.info(`Socket connected: ${socket.id} (user: ${socket.user.id}, role: ${socket.user.role})`);
-
-    // Join a personal room so we can push targeted notifications later (Flow 10)
     socket.join(`user:${socket.user.id}`);
+
+    registerWorkCellHandlers(io, socket);
 
     socket.on('disconnect', () => {
       logger.info(`Socket disconnected: ${socket.id}`);

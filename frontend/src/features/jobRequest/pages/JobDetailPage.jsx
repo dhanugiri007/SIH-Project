@@ -2,6 +2,26 @@ import { useParams, Link } from 'react-router-dom';
 import { useJobDetail } from '../hooks/useJobDetail';
 import StatusBadge from '../components/StatusBadge';
 import TaskCard from '../components/TaskCard';
+import { WorkCellProvider, useWorkCellContext } from '../../workcell/workCellContext';
+import WorkCellBoard from '../../workcell/components/WorkCellBoard';
+
+function LiveCrewInner() {
+  const { workCell, presentUserIds, loading, error } = useWorkCellContext();
+  if (loading || error || !workCell) return null;
+  return (
+    <div className="mt-6">
+      <WorkCellBoard workCell={workCell} presentUserIds={presentUserIds} />
+    </div>
+  );
+}
+
+function LiveCrewSection({ jobId }) {
+  return (
+    <WorkCellProvider jobId={jobId}>
+      <LiveCrewInner />
+    </WorkCellProvider>
+  );
+}
 
 export default function JobDetailPage() {
   const { jobId } = useParams();
@@ -10,6 +30,8 @@ export default function JobDetailPage() {
   if (loading) return <div className="p-10 text-gray-500">Loading job...</div>;
   if (error) return <div className="p-10 text-red-500">{error}</div>;
   if (!job) return null;
+
+  const showLiveCrew = ['dispatched', 'in_progress', 'completed'].includes(job.status);
 
   return (
     <div className="min-h-screen bg-white p-6 md:p-10">
@@ -27,6 +49,8 @@ export default function JobDetailPage() {
             <TaskCard key={task._id} task={task} onVerify={verifyTask} onCancel={cancelTask} />
           ))}
         </div>
+
+        {showLiveCrew && <LiveCrewSection jobId={jobId} />}
       </div>
     </div>
   );

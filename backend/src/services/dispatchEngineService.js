@@ -5,26 +5,24 @@ const { getEligibleWorkersForTask } = require('./eligibilityService');
 const { computeFairnessScore, recordAssignment } = require('./opportunityLedgerService');
 const { solveAssignment } = require('./dispatchSolverClient');
 const { recalcJobStatus } = require('./jobStatusService');
+const { syncWorkCellForJob } = require('./workCellService');
 const logger = require('../utils/logger');
 
 const SKILL_MATCH_POINTS = 40;
 const PROXIMITY_MAX_POINTS = 30;
 const RATING_MAX_POINTS = 10;
-// Fairness contributes up to 20 (see opportunityLedgerService)
 
 function proximityScore(distanceKm) {
-  if (distanceKm === null) return PROXIMITY_MAX_POINTS / 2; // unknown location -> neutral score
-  return Math.max(0, Math.round(PROXIMITY_MAX_POINTS - distanceKm)); // linear falloff, 0 by ~30km
+  if (distanceKm === null) return PROXIMITY_MAX_POINTS / 2;
+  return Math.max(0, Math.round(PROXIMITY_MAX_POINTS - distanceKm));
 }
 
 function ratingScore(ratingAvg) {
-  return Math.round(Math.min(RATING_MAX_POINTS, (ratingAvg || 0) * 2)); // 0-5 rating -> 0-10 pts
+  return Math.round(Math.min(RATING_MAX_POINTS, (ratingAvg || 0) * 2));
 }
 
-// Builds the scored candidate list for ONE task
 async function buildScoredCandidates(task, job) {
   const eligible = await getEligibleWorkersForTask(task, job.serviceLocation);
-
   const candidates = [];
   for (const { profile, distanceKm } of eligible) {
     const fairness = await computeFairnessScore(profile.user._id);
@@ -49,8 +47,6 @@ async function buildScoredCandidates(task, job) {
   return candidates;
 }
 
-// Dispatches all pending tasks for a job (or a specific subset of taskIds, used by
-// Flow 6's self-healing to reopen and re-dispatch just one failed task).
 async function dispatchTasksForJob(jobId, { taskIds } = {}) {
   const job = await Job.findById(jobId);
   if (!job) throw new Error('Job not found for dispatch');
@@ -86,10 +82,7 @@ async function dispatchTasksForJob(jobId, { taskIds } = {}) {
       assignedWorker: workerId,
       status: { $in: ['assigned', 'in_progress'] },
     });
-    workerCapacityPayload.push({
-      workerId,
-      capacity: Math.max(0, profile.capacity - activeCount),
-    });
+    workerCapacityPayload.push({ workerId, capacity: Math.max(0, profile.capacity - activeCount) });
   }
 
   const dispatched = [];
@@ -103,12 +96,8 @@ async function dispatchTasksForJob(jobId, { taskIds } = {}) {
       if (!winningWorkerId) {
         unfilled.push(task._id);
         task.dispatchExplanation = {
-          skillMatchScore: 0,
-          proximityKm: null,
-          proximityScore: 0,
-          fairnessScore: 0,
-          ratingScore: 0,
-          totalScore: 0,
+          skillMatchScore: 0, proximityKm: null, proximityScore: 0, fairnessScore: 0,
+          ratingScore: 0, totalScore: 0,
           eligibleWorkerCount: candidateMap.get(String(task._id))?.length || 0,
           reason: 'No eligible worker available at dispatch time',
         };
@@ -129,11 +118,8 @@ async function dispatchTasksForJob(jobId, { taskIds } = {}) {
       await task.save();
 
       await recordAssignment({
-        task: task._id,
-        job: jobId,
-        worker: winningWorkerId,
-        scoreBreakdown: winner.breakdown,
-        eligibleWorkerCount: candidates.length,
+        task: task._id, job: jobId, worker: winningWorkerId,
+        scoreBreakdown: winner.breakdown, eligibleWorkerCount: candidates.length,
       });
 
       dispatched.push(task._id);
@@ -142,13 +128,8 @@ async function dispatchTasksForJob(jobId, { taskIds } = {}) {
     for (const task of pendingTasks) {
       unfilled.push(task._id);
       task.dispatchExplanation = {
-        skillMatchScore: 0,
-        proximityKm: null,
-        proximityScore: 0,
-        fairnessScore: 0,
-        ratingScore: 0,
-        totalScore: 0,
-        eligibleWorkerCount: 0,
+        skillMatchScore: 0, proximityKm: null, proximityScore: 0, fairnessScore: 0,
+        ratingScore: 0, totalScore: 0, eligibleWorkerCount: 0,
         reason: 'No eligible worker found for required skills/availability',
       };
       await task.save();
@@ -156,6 +137,11 @@ async function dispatchTasksForJob(jobId, { taskIds } = {}) {
   }
 
   await recalcJobStatus(jobId);
+
+  // Form/refresh the WorkCell now that assignments exist for this job.
+  if (dispatched.length > 0) {
+    await syncWorkCellForJob(jobId);
+  }
 
   logger.info(`Dispatch complete for job ${jobId}: ${dispatched.length} assigned, ${unfilled.length} unfilled`);
   return { dispatched, unfilled };

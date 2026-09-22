@@ -1,9 +1,17 @@
+import { useMemo } from 'react';
 import { WorkerTasksProvider, useWorkerTasksContext } from '../workerTasksContext';
+import { useJoinWorkCells } from '../../workcell/hooks/useJoinWorkCells';
 import AvailabilityToggle from '../components/AvailabilityToggle';
 import WorkerTaskCard from '../components/WorkerTaskCard';
 
 function WorkerDashboardInner() {
   const { tasks, loading, isOnline, toggle, startTask, completeTask } = useWorkerTasksContext();
+
+  const activeJobIds = useMemo(
+    () => [...new Set(tasks.filter((t) => t.job?._id).map((t) => t.job._id))],
+    [tasks]
+  );
+  useJoinWorkCells(activeJobIds);
 
   return (
     <div className="min-h-screen bg-white p-6 md:p-10">

@@ -5,6 +5,7 @@ const workerRoutes = require('./workerRoutes');
 const jobRoutes = require('./jobRoutes');
 const taskRoutes = require('./taskRoutes');
 const dispatchRoutes = require('./dispatchRoutes');
+const workCellRoutes = require('./workCellRoutes');
 
 const router = express.Router();
 
@@ -14,5 +15,6 @@ router.use('/workers', workerRoutes);
 router.use('/jobs', jobRoutes);
 router.use('/tasks', taskRoutes);
 router.use('/dispatch', dispatchRoutes);
+router.use('/workcells', workCellRoutes);
 
 module.exports = router;

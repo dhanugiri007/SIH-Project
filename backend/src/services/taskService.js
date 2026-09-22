@@ -2,6 +2,7 @@ const Task = require('../models/Task');
 const ApiError = require('../utils/ApiError');
 const { assertValidTransition, assertRoleCanPerform } = require('../utils/taskStateMachine');
 const { recalcJobStatus } = require('./jobStatusService');
+const { notifyTaskUpdate } = require('./workCellService');
 
 async function getTasksByJob(jobId) {
   return Task.find({ job: jobId }).populate('dependsOn', 'title tempId status').populate('assignedWorker', 'name phone');
@@ -61,6 +62,9 @@ async function updateTaskStatus(taskId, actorUser, nextStatus) {
   await task.save();
 
   await recalcJobStatus(task.job._id);
+
+  // Push the change live to anyone watching this job's WorkCell (customer + crew).
+  await notifyTaskUpdate(task.job._id, task._id, nextStatus);
 
   return getTaskById(task._id);
 }
