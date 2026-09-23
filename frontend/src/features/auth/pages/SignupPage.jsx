@@ -4,11 +4,18 @@ import SignupForm from '../components/SignupForm';
 
 export default function SignupPage() {
   return (
-    <AuthLayout title="Create your account" subtitle="Join SAHYOG FLOW as a customer, worker, or cooperative">
+    <AuthLayout
+      title="Create your account."
+      subtitle="Join Sahyog Flow as an autonomous worker, service customer, or cooperative leader."
+      activeMode="signup"
+    >
       <SignupForm />
-      <p className="text-sm text-gray-500 mt-4 text-center">
-        Already have an account? <Link to="/login" className="text-indigo-600 font-medium">Sign in</Link>
-      </p>
+      <div className="mt-5 text-center text-sm text-[#596174]">
+        Already have an account?{' '}
+        <Link to="/login" className="text-[#B8861B] hover:text-[#A57412] font-semibold underline underline-offset-2">
+          Sign In
+        </Link>
+      </div>
     </AuthLayout>
   );
 }

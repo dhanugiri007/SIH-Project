@@ -23,63 +23,92 @@ export default function TaskCard({ task, onVerify, onCancel }) {
   }, [task._id, task.status]);
 
   return (
-    <div className={`border rounded-lg p-3 transition-colors ${blocked ? 'border-amber-200 bg-amber-50/40' : 'border-gray-100 hover:border-indigo-200'}`}>
-      <div className="flex items-center justify-between mb-1">
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-gray-900">{task.title}</span>
+    <div
+      className={`border rounded-2xl p-4 md:p-5 transition-all duration-150 bg-white ${
+        blocked
+          ? 'border-[#EED58C] bg-[#FFF9E8]/30'
+          : 'border-[#E8E5DE] hover:border-[#D5A63A] shadow-sahyog-card'
+      }`}
+    >
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <span className="font-bold text-sm text-[#0A0A0D]">{task.title}</span>
           <TaskTypeBadge type={task.type} />
         </div>
         <StatusBadge status={task.status} />
       </div>
 
-      {task.description && <p className="text-sm text-gray-500 mb-2">{task.description}</p>}
+      {task.description && (
+        <p className="text-xs text-[#596174] mb-3 leading-relaxed">{task.description}</p>
+      )}
 
-      <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400 mb-2">
-        <span>⏱ {task.estimatedDurationMinutes} min</span>
-        {task.assignedWorker && <span>👷 {task.assignedWorker.name}</span>}
+      <div className="flex flex-wrap items-center gap-3 text-xs text-[#596174] mb-3">
+        <span className="inline-flex items-center gap-1 font-medium">
+          ⏱ {task.estimatedDurationMinutes} min
+        </span>
+        {task.assignedWorker && (
+          <span className="inline-flex items-center gap-1 font-medium text-[#101010]">
+            👷 {task.assignedWorker.name}
+          </span>
+        )}
         {blocked && (
-          <span className="text-amber-600 font-medium">
+          <span className="text-[#80540B] font-semibold bg-[#FFF9E8] px-2 py-0.5 rounded-md border border-[#EED58C]">
             🔒 waiting on: {task.dependsOn.filter((d) => !['completed', 'verified'].includes(d.status)).map((d) => d.title).join(', ')}
           </span>
         )}
         {exp && (
-          <button onClick={() => setShowWhy((s) => !s)} className="text-indigo-500 underline underline-offset-2">
-            why this worker?
+          <button
+            onClick={() => setShowWhy((s) => !s)}
+            className="text-[#B8861B] hover:text-[#A57412] font-semibold underline underline-offset-2 cursor-pointer"
+          >
+            {showWhy ? 'Hide matching rationale' : 'Why this worker?'}
           </button>
         )}
       </div>
 
+      {/* Transparent Dispatching Explanation Panel */}
       {showWhy && exp && (
-        <div className="mb-2 text-xs bg-indigo-50 border border-indigo-100 rounded-lg p-2 text-indigo-800 space-y-1">
-          <p>{exp.reason}</p>
-          <div className="flex gap-3 flex-wrap text-indigo-600">
-            <span>Skill: {exp.skillMatchScore}</span>
-            <span>Proximity: {exp.proximityScore}{exp.proximityKm != null ? ` (${exp.proximityKm}km)` : ''}</span>
-            <span>Fairness: {exp.fairnessScore}</span>
-            <span>Rating: {exp.ratingScore}</span>
-            <span className="font-semibold">Total: {exp.totalScore}</span>
+        <div className="mb-3 text-xs bg-[#FFF9E8] border border-[#EED58C] rounded-xl p-3 text-[#5C3C08] space-y-1.5">
+          <p className="font-medium text-[#80540B]">{exp.reason}</p>
+          <div className="flex gap-3 flex-wrap text-xs pt-1 border-t border-[#FBECC5]">
+            <span>Skill Match: <strong>{exp.skillMatchScore}</strong></span>
+            <span>Proximity: <strong>{exp.proximityScore}{exp.proximityKm != null ? ` (${exp.proximityKm}km)` : ''}</strong></span>
+            <span>Coop Fairness: <strong>{exp.fairnessScore}</strong></span>
+            <span>Rating: <strong>{exp.ratingScore}</strong></span>
+            <span className="text-[#B8861B] font-bold">Total: {exp.totalScore}</span>
           </div>
         </div>
       )}
 
+      {/* Completion Photo/Video Proof */}
       {proof && (
-        <div className="mb-2">
+        <div className="mb-3 border border-[#E8E5DE] rounded-xl overflow-hidden bg-[#FAF9F6] p-2">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-[#596174] mb-1.5">
+            Worker Verification Proof
+          </p>
           {proof.fileType === 'video' ? (
-            <video src={resolveFileUrl(proof.fileUrl)} controls className="w-full rounded-lg max-h-56" />
+            <video src={resolveFileUrl(proof.fileUrl)} controls className="w-full rounded-lg max-h-56 bg-black" />
           ) : (
             <img src={resolveFileUrl(proof.fileUrl)} alt="Completion proof" className="w-full rounded-lg max-h-56 object-cover" />
           )}
         </div>
       )}
 
-      <div className="flex gap-2">
+      {/* Action Buttons */}
+      <div className="flex gap-2.5">
         {canVerify(task) && (
-          <button onClick={() => onVerify(task._id)} className="text-xs px-3 py-1 rounded-full bg-emerald-600 text-white hover:bg-emerald-700">
-            Mark Verified
+          <button
+            onClick={() => onVerify(task._id)}
+            className="text-xs font-semibold px-4 py-1.5 rounded-xl bg-[#16834B] hover:bg-[#11693c] text-white shadow-sm transition-colors cursor-pointer"
+          >
+            Verify Completion
           </button>
         )}
         {canCancel(task) && (
-          <button onClick={() => onCancel(task._id)} className="text-xs px-3 py-1 rounded-full border border-red-200 text-red-600 hover:bg-red-50">
+          <button
+            onClick={() => onCancel(task._id)}
+            className="text-xs font-semibold px-4 py-1.5 rounded-xl border border-[#F5C2BF] text-[#C2413B] hover:bg-[#FCE9E7] transition-colors cursor-pointer"
+          >
             Cancel Task
           </button>
         )}

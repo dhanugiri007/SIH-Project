@@ -17,10 +17,10 @@ export default function RatingBox({ task }) {
 
   if (existing) {
     return (
-      <div className="border border-gray-100 rounded-lg p-3 mt-2 bg-amber-50/30">
-        <p className="text-xs text-gray-500 mb-1">Your rating</p>
+      <div className="border border-[#EED58C] rounded-xl p-3 mt-3 bg-[#FFF9E8]/50">
+        <p className="text-xs font-semibold text-[#80540B] mb-1">Your Verified Feedback</p>
         <StarPicker value={existing.stars} readOnly />
-        {existing.comment && <p className="text-xs text-gray-500 mt-1">"{existing.comment}"</p>}
+        {existing.comment && <p className="text-xs text-[#596174] mt-1.5 italic">&ldquo;{existing.comment}&rdquo;</p>}
       </div>
     );
   }
@@ -40,21 +40,21 @@ export default function RatingBox({ task }) {
   };
 
   return (
-    <div className="border border-gray-100 rounded-lg p-3 mt-2">
-      <p className="text-xs text-gray-500 mb-2">Rate {task.assignedWorker.name}'s work</p>
+    <div className="border border-[#E8E5DE] rounded-xl p-3.5 mt-3 bg-[#FAF9F6]">
+      <p className="text-xs font-semibold text-[#101010] mb-2">Rate {task.assignedWorker.name}&apos;s work</p>
       <StarPicker value={stars} onChange={setStars} />
       <textarea
         rows={2}
-        placeholder="Optional feedback"
+        placeholder="Share a short note about quality and timeliness..."
         value={comment}
         onChange={(e) => setComment(e.target.value)}
-        className="w-full text-xs px-2 py-1.5 border border-gray-300 rounded outline-none focus:ring-2 focus:ring-indigo-400 mt-2"
+        className="w-full text-xs px-3 py-2 bg-white border border-[#E8E5DE] rounded-lg outline-none focus:ring-2 focus:ring-[#C99A32]/25 focus:border-[#C99A32] mt-2 transition-colors"
       />
-      {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+      {error && <p className="text-xs text-[#C2413B] mt-1">{error}</p>}
       <button
         onClick={submit}
         disabled={stars === 0 || submitting}
-        className="text-xs px-3 py-1.5 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 mt-2"
+        className="text-xs font-semibold px-4 py-1.5 rounded-lg bg-[#B8861B] hover:bg-[#A57412] text-white disabled:opacity-50 mt-2 transition-colors cursor-pointer shadow-sm"
       >
         {submitting ? 'Submitting...' : 'Submit Rating'}
       </button>

@@ -4,11 +4,18 @@ import LoginForm from '../components/LoginForm';
 
 export default function LoginPage() {
   return (
-    <AuthLayout title="Welcome back" subtitle="Sign in to your SAHYOG FLOW account">
+    <AuthLayout
+      title="Welcome back."
+      subtitle="Sign in to your Sahyog Flow workspace to manage jobs, routes, and earnings."
+      activeMode="login"
+    >
       <LoginForm />
-      <p className="text-sm text-gray-500 mt-4 text-center">
-        Don't have an account? <Link to="/signup" className="text-indigo-600 font-medium">Sign up</Link>
-      </p>
+      <div className="mt-5 text-center text-sm text-[#596174]">
+        Don&apos;t have an account?{' '}
+        <Link to="/signup" className="text-[#B8861B] hover:text-[#A57412] font-semibold underline underline-offset-2">
+          Join Sahyog
+        </Link>
+      </div>
     </AuthLayout>
   );
 }
