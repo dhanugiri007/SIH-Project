@@ -9,6 +9,8 @@ const workCellRoutes = require('./workCellRoutes');
 const completionProofRoutes = require('./completionProofRoutes');
 const settlementRoutes = require('./settlementRoute');
 const notificationRoutes = require('./notificationRoutes');
+const cooperativeAdminRoutes = require('./cooperativeAdminRoutes');
+const ratingRoutes = require('./ratingRoutes');
 
 const router = express.Router();
 
@@ -22,5 +24,7 @@ router.use('/workcells', workCellRoutes);
 router.use('/completion-proofs', completionProofRoutes);
 router.use('/settlements', settlementRoutes);
 router.use('/notifications', notificationRoutes);
+router.use('/admin', cooperativeAdminRoutes);
+router.use('/ratings', ratingRoutes);
 
 module.exports = router;

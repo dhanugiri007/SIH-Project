@@ -7,7 +7,7 @@ import { useSocket } from '../../../shared/hooks/useSocket';
 import { workCellApiService } from '../../workcell/service/workCellApiService';
 import AvailabilityToggle from '../components/AvailabilityToggle';
 import WorkerTaskCard from '../components/WorkerTaskCard';
-import NotificationBell from '../../notifications/components/NotificationBell';
+import NotificationBell from '../../notification/components/Notification';
 
 function WorkerDashboardInner() {
   const { tasks, loading, isOnline, toggle, startTask, completeTask, reportIssue } = useWorkerTasksContext();

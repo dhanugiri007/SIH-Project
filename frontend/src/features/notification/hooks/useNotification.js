@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSocket } from '../../../shared/hooks/useSocket';
-import { notificationApiService } from '../service/notificationService';
+import { notificationApiService } from '../services/notificationService';
 
 export function useNotifications() {
   const { socket, connected } = useSocket();

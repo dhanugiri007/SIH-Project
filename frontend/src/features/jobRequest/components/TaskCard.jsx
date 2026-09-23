@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import TaskTypeBadge from './TaskTypeBadge';
 import StatusBadge from './StatusBadge';
+import RatingBox from './RatingBox';
 import { resolveFileUrl } from '../../../shared/utils/fileUrl';
 import api from '../../../shared/utils/api';
 
@@ -83,6 +84,8 @@ export default function TaskCard({ task, onVerify, onCancel }) {
           </button>
         )}
       </div>
+
+      <RatingBox task={task} />
     </div>
   );
 }
