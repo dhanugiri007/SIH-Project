@@ -7,7 +7,7 @@ import Button from '../../../shared/components/Button';
 import RoleSelect from './RoleSelect';
 
 export default function SignupForm() {
-  const { register } = useAuth();
+  const { register, registerCooperative } = useAuth();
   const { cooperatives, loading: loadingCoops } = useCooperatives();
   const navigate = useNavigate();
 
@@ -19,6 +19,9 @@ export default function SignupForm() {
     password: '',
     cooperativeId: '',
     skills: '',
+    coopName: '',
+    registrationNumber: '',
+    address: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -28,14 +31,28 @@ export default function SignupForm() {
     setError('');
     setLoading(true);
     try {
-      const payload = {
-        ...form,
-        role,
-        skills: role === 'worker' ? form.skills.split(',').map((s) => s.trim()).filter(Boolean) : undefined,
-      };
-      const user = await register(payload);
-      const dest =
-        user.role === 'customer' ? '/customer' : user.role === 'worker' ? '/worker' : '/admin';
+      let user;
+
+      if (role === 'cooperativeAdmin') {
+        user = await registerCooperative({
+          coopName: form.coopName,
+          registrationNumber: form.registrationNumber,
+          address: form.address,
+          adminName: form.name,
+          adminEmail: form.email,
+          adminPhone: form.phone,
+          adminPassword: form.password,
+        });
+      } else {
+        const payload = {
+          ...form,
+          role,
+          skills: role === 'worker' ? form.skills.split(',').map((s) => s.trim()).filter(Boolean) : undefined,
+        };
+        user = await register(payload);
+      }
+
+      const dest = user.role === 'customer' ? '/customer' : user.role === 'worker' ? '/worker' : '/admin';
       navigate(dest);
     } catch (err) {
       setError(err.message || 'Registration failed');
@@ -47,6 +64,29 @@ export default function SignupForm() {
   return (
     <form onSubmit={handleSubmit}>
       <RoleSelect value={role} onChange={setRole} />
+
+      {role === 'cooperativeAdmin' && (
+        <>
+          <Input
+            label="Cooperative name"
+            required
+            value={form.coopName}
+            onChange={(e) => setForm({ ...form, coopName: e.target.value })}
+          />
+          <Input
+            label="Registration number"
+            required
+            value={form.registrationNumber}
+            onChange={(e) => setForm({ ...form, registrationNumber: e.target.value })}
+          />
+          <Input
+            label="Address (optional)"
+            value={form.address}
+            onChange={(e) => setForm({ ...form, address: e.target.value })}
+          />
+          <p className="text-xs text-gray-400 mb-2">Now enter your details as the admin of this cooperative:</p>
+        </>
+      )}
 
       <Input label="Full Name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
       <Input label="Email" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />

@@ -2,7 +2,11 @@ import { useState } from 'react';
 
 export default function WorkerRosterRow({ worker, onUpdateCapacity, onToggleActive, onVerifyCert }) {
   const [expanded, setExpanded] = useState(false);
-  const [capacityInput, setCapacityInput] = useState(worker.capacity);
+  const [capacityInput, setCapacityInput] = useState(worker?.capacity ?? 1);
+
+  // Guard AFTER hooks (hooks must always run in the same order), but BEFORE any
+  // rendering logic touches worker/worker.user.
+  if (!worker || !worker.user) return null;
 
   return (
     <div className="border border-gray-100 rounded-lg overflow-hidden">
@@ -15,7 +19,7 @@ export default function WorkerRosterRow({ worker, onUpdateCapacity, onToggleActi
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-gray-400">⭐ {worker.ratingAvg?.toFixed(1) || '—'} ({worker.ratingCount})</span>
+          <span className="text-xs text-gray-400">⭐ {worker.ratingAvg?.toFixed(1) || '—'} ({worker.ratingCount || 0})</span>
           <span className={`text-xs px-2 py-0.5 rounded-full ${worker.user.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
             {worker.user.isActive ? 'Active' : 'Suspended'}
           </span>
@@ -55,9 +59,11 @@ export default function WorkerRosterRow({ worker, onUpdateCapacity, onToggleActi
 
           <div>
             <p className="text-xs text-gray-500 mb-2">Certifications</p>
-            {worker.certifications.length === 0 && <p className="text-xs text-gray-400">None submitted</p>}
+            {(!worker.certifications || worker.certifications.length === 0) && (
+              <p className="text-xs text-gray-400">None submitted</p>
+            )}
             <div className="space-y-1.5">
-              {worker.certifications.map((cert, idx) => (
+              {worker.certifications?.map((cert, idx) => (
                 <div key={idx} className="flex items-center justify-between text-xs bg-white border border-gray-100 rounded px-2 py-1.5">
                   <span>{cert.name} {cert.issuingBody && `· ${cert.issuingBody}`}</span>
                   {cert.verified ? (

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { WorkerTasksProvider, useWorkerTasksContext } from '../workerTasksContext';
 import { useJoinWorkCells } from '../../workcell/hooks/useJoinWorkCells';
 import { useLocationBroadcast } from '../hooks/useLocationBroadcast';
+import { useLocationPing } from '../hooks/useLocationPing';
 import { useSocket } from '../../../shared/hooks/useSocket';
 import { workCellApiService } from '../../workcell/service/workCellApiService';
 import AvailabilityToggle from '../components/AvailabilityToggle';
@@ -16,6 +17,7 @@ function WorkerDashboardInner() {
 
   const activeJobIds = useMemo(() => [...new Set(tasks.filter((t) => t.job?._id).map((t) => t.job._id))], [tasks]);
   useJoinWorkCells(activeJobIds);
+  useLocationPing(isOnline);
 
   const inProgressTask = tasks.find((t) => t.status === 'in_progress');
 
@@ -38,6 +40,9 @@ function WorkerDashboardInner() {
             <NotificationBell />
             <Link to="/worker/earnings" className="text-sm px-3 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
               💰 Earnings
+            </Link>
+            <Link to="/worker/settings" className="text-sm px-3 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
+              ⚙️ Settings
             </Link>
             <AvailabilityToggle isOnline={isOnline} onToggle={toggle} />
           </div>

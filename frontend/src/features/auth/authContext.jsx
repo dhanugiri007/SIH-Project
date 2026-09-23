@@ -41,13 +41,22 @@ export function AuthProvider({ children }) {
     return user;
   };
 
+  // Cooperative admins register differently — this creates the Cooperative AND
+  // the admin account together, so the admin is always properly linked.
+  const registerCooperative = async (payload) => {
+    const { user, token } = await authService.registerCooperative(payload);
+    localStorage.setItem('sahyog_token', token);
+    setUser(user);
+    return user;
+  };
+
   const logout = () => {
     localStorage.removeItem('sahyog_token');
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, registerCooperative, logout }}>
       {children}
     </AuthContext.Provider>
   );

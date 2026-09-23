@@ -8,7 +8,8 @@ import MyJobsPage from './features/jobRequest/pages/MyJobsPage';
 import JobDetailPage from './features/jobRequest/pages/JobDetailPage';
 import WorkerDashboardPage from './features/workerTasks/pages/WorkerDashboardPage';
 import EarningsPage from './features/workerTasks/pages/EarningsPage';
-import AdminDashboardPage from './features/cooperativeAdmin/pages/AdminDashboard'
+import WorkerSettingsPage from './features/workerTasks/pages/WorkerSettingsPage';
+import AdminDashboardPage from './features/cooperativeAdmin/pages/AdminDashboard';
 import ProtectedRoute from './shared/components/ProtectedRoute';
 
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
 
             <Route path="/worker" element={<ProtectedRoute allowedRoles={['worker']}><WorkerDashboardPage /></ProtectedRoute>} />
             <Route path="/worker/earnings" element={<ProtectedRoute allowedRoles={['worker']}><EarningsPage /></ProtectedRoute>} />
+            <Route path="/worker/settings" element={<ProtectedRoute allowedRoles={['worker']}><WorkerSettingsPage /></ProtectedRoute>} />
 
             <Route path="/admin" element={<ProtectedRoute allowedRoles={['cooperativeAdmin']}><AdminDashboardPage /></ProtectedRoute>} />
 
