@@ -6,7 +6,10 @@ import Input from '../../../shared/components/Input';
 import Button from '../../../shared/components/Button';
 
 export default function WorkerSettingsPage() {
-  const { profile, loading, saving, saveSkillsAndCapacity, saveAvailabilityWindows, addCertification } = useWorkerSettings();
+  const {
+    profile, loading, saving, locating, locationError,
+    saveSkillsAndCapacity, saveAvailabilityWindows, addCertification, captureLocationNow,
+  } = useWorkerSettings();
 
   const [skillsInput, setSkillsInput] = useState('');
   const [capacity, setCapacity] = useState(1);
@@ -24,11 +27,37 @@ export default function WorkerSettingsPage() {
 
   if (loading) return <div className="p-10 text-gray-500">Loading settings...</div>;
 
+  const hasLocation = profile?.location?.coordinates?.some((c) => c !== 0);
+
   return (
     <div className="min-h-screen bg-white p-6 md:p-10">
       <div className="max-w-xl mx-auto">
         <Link to="/worker" className="text-sm text-indigo-600 mb-4 inline-block">← Back to tasks</Link>
         <h1 className="text-2xl font-semibold text-gray-900 mb-6">Worker Settings</h1>
+
+        <div className="border border-gray-200 rounded-xl p-5 mb-6">
+          <h3 className="font-medium text-gray-900 mb-1">Location</h3>
+          <p className="text-xs text-gray-400 mb-3">
+            Used to score how close you are to a job when tasks are dispatched. Without this, you'll still be matched, just with a neutral proximity score.
+          </p>
+
+          {hasLocation ? (
+            <p className="text-xs text-emerald-600 mb-3">
+              ✓ Location set ({profile.location.coordinates[1].toFixed(4)}, {profile.location.coordinates[0].toFixed(4)})
+            </p>
+          ) : (
+            <p className="text-xs text-amber-600 mb-3">No location set yet</p>
+          )}
+
+          <button
+            onClick={captureLocationNow}
+            disabled={locating}
+            className="text-xs px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50"
+          >
+            📍 {locating ? 'Getting location...' : hasLocation ? 'Update my location' : 'Set my current location'}
+          </button>
+          {locationError && <p className="text-xs text-red-500 mt-2">{locationError}</p>}
+        </div>
 
         <div className="border border-gray-200 rounded-xl p-5 mb-6">
           <h3 className="font-medium text-gray-900 mb-3">Skills & Capacity</h3>

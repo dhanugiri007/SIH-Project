@@ -5,6 +5,8 @@ export function useWorkerSettings() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState('');
 
   const refresh = async () => {
     const data = await workerTaskService.getMyProfile();
@@ -45,5 +47,36 @@ export function useWorkerSettings() {
     }
   };
 
-  return { profile, loading, saving, saveSkillsAndCapacity, saveAvailabilityWindows, addCertification };
+  // Manual, one-shot location capture — more reliable for a demo than waiting
+  // on the background ping, since it resolves (or fails) immediately and visibly.
+  const captureLocationNow = () => {
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation not supported in this browser');
+      return;
+    }
+    setLocating(true);
+    setLocationError('');
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          await workerTaskService.pingLocation(pos.coords.latitude, pos.coords.longitude);
+          await refresh();
+        } catch (err) {
+          setLocationError(err.message || 'Failed to save location');
+        } finally {
+          setLocating(false);
+        }
+      },
+      (err) => {
+        setLocationError(err.message || 'Could not get your location — check browser permissions');
+        setLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  };
+
+  return {
+    profile, loading, saving, locating, locationError,
+    saveSkillsAndCapacity, saveAvailabilityWindows, addCertification, captureLocationNow,
+  };
 }
