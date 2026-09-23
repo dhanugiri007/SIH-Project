@@ -25,7 +25,6 @@ export default function EarningsPage() {
           ← Back to task queue
         </Link>
 
-        {/* Earnings Summary Banner */}
         <div className="p-6 md:p-8 bg-white border border-[#E8E5DE] rounded-2xl shadow-sahyog-card mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#FFF9E8] border border-[#EED58C] text-[#80540B] text-[11px] font-bold uppercase tracking-wider mb-2">

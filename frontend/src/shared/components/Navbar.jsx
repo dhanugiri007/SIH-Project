@@ -24,9 +24,7 @@ export default function Navbar({ activeSection = '' }) {
   return (
     <header className="w-full bg-[#FAF9F6]/90 backdrop-blur-md border-b border-[#E8E5DE] sticky top-0 z-40">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 h-20 flex items-center justify-between">
-        {/* Brand Left */}
         <Link to="/" className="flex items-center gap-3.5 group">
-          {/* Cooperative Emblem */}
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#DDB85C] via-[#C99A32] to-[#B8861B] p-0.5 shadow-sm flex items-center justify-center flex-shrink-0">
             <div className="w-full h-full bg-[#FAF9F6] rounded-[10px] flex items-center justify-center">
               <svg className="w-5 h-5 text-[#B8861B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -52,7 +50,6 @@ export default function Navbar({ activeSection = '' }) {
           </div>
         </Link>
 
-        {/* Center Navigation Links */}
         <nav className="hidden md:flex items-center gap-8">
           <Link
             to={user ? getDashboardPath() : "/login"}
@@ -80,7 +77,6 @@ export default function Navbar({ activeSection = '' }) {
           </a>
         </nav>
 
-        {/* Right CTA / Auth Controls */}
         <div className="hidden sm:flex items-center gap-3">
           {user ? (
             <div className="flex items-center gap-3">
@@ -98,7 +94,7 @@ export default function Navbar({ activeSection = '' }) {
                   logout();
                   navigate('/login');
                 }}
-                className="text-xs font-medium text-[#596174] hover:text-[#C2413B] px-2 py-1.5 transition-colors"
+                className="text-xs font-medium text-[#596174] hover:text-[#C2413B] px-2 py-1.5 transition-colors cursor-pointer"
               >
                 Sign out
               </button>
@@ -121,7 +117,6 @@ export default function Navbar({ activeSection = '' }) {
           )}
         </div>
 
-        {/* Mobile menu hamburger */}
         <div className="flex sm:hidden items-center gap-2">
           {user && <NotificationBell />}
           <button
@@ -140,7 +135,6 @@ export default function Navbar({ activeSection = '' }) {
         </div>
       </div>
 
-      {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="sm:hidden border-t border-[#E8E5DE] bg-[#FAF9F6] px-4 py-4 space-y-3">
           <Link

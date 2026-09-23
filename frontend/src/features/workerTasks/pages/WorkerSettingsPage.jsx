@@ -64,7 +64,6 @@ export default function WorkerSettingsPage() {
           </p>
         </div>
 
-        {/* Location Section */}
         <div className="border border-[#E8E5DE] rounded-2xl p-6 bg-white shadow-sahyog-card mb-6">
           <h2 className="text-sm font-bold text-[#0A0A0D] mb-1">Geographic Dispatch Anchor</h2>
           <p className="text-xs text-[#596174] mb-3 leading-relaxed">
@@ -91,7 +90,6 @@ export default function WorkerSettingsPage() {
           {locationError && <p className="text-xs text-[#C2413B] mt-2">{locationError}</p>}
         </div>
 
-        {/* Skills and Capacity */}
         <div className="border border-[#E8E5DE] rounded-2xl p-6 bg-white shadow-sahyog-card mb-6">
           <h2 className="text-sm font-bold text-[#0A0A0D] mb-3">Skills & Concurrency Capacity</h2>
 
@@ -129,7 +127,6 @@ export default function WorkerSettingsPage() {
           </Button>
         </div>
 
-        {/* Availability Schedule */}
         <div className="border border-[#E8E5DE] rounded-2xl p-6 bg-white shadow-sahyog-card mb-6">
           <h2 className="text-sm font-bold text-[#0A0A0D] mb-1">Weekly Working Schedule</h2>
           <p className="text-xs text-[#596174] mb-4">
@@ -150,7 +147,6 @@ export default function WorkerSettingsPage() {
           </div>
         </div>
 
-        {/* Certifications */}
         <div className="border border-[#E8E5DE] rounded-2xl p-6 bg-white shadow-sahyog-card">
           <h2 className="text-sm font-bold text-[#0A0A0D] mb-1">Certifications & Licenses</h2>
           <p className="text-xs text-[#596174] mb-4">

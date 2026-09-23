@@ -4,8 +4,6 @@ export default function WorkerRosterRow({ worker, onUpdateCapacity, onToggleActi
   const [expanded, setExpanded] = useState(false);
   const [capacityInput, setCapacityInput] = useState(worker?.capacity ?? 1);
 
-  // Guard AFTER hooks (hooks must always run in the same order), but BEFORE any
-  // rendering logic touches worker/worker.user.
   if (!worker || !worker.user) return null;
 
   return (
@@ -40,7 +38,6 @@ export default function WorkerRosterRow({ worker, onUpdateCapacity, onToggleActi
 
       {expanded && (
         <div className="p-4 sm:p-5 border-t border-[#F0EDE6] bg-[#FAF9F6] space-y-4">
-          {/* Capacity settings */}
           <div className="flex flex-wrap items-center gap-3">
             <label className="text-xs font-semibold text-[#596174] w-32 uppercase tracking-wide">
               Capacity Limit
@@ -61,7 +58,6 @@ export default function WorkerRosterRow({ worker, onUpdateCapacity, onToggleActi
             </button>
           </div>
 
-          {/* Account status */}
           <div className="flex flex-wrap items-center gap-3">
             <label className="text-xs font-semibold text-[#596174] w-32 uppercase tracking-wide">
               Status Control
@@ -78,7 +74,6 @@ export default function WorkerRosterRow({ worker, onUpdateCapacity, onToggleActi
             </button>
           </div>
 
-          {/* Certifications review */}
           <div className="pt-2 border-t border-[#E8E5DE]">
             <p className="text-xs font-semibold text-[#101010] uppercase tracking-wide mb-2">
               Submitted Certifications

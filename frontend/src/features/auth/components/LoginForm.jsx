@@ -32,7 +32,6 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Role Selection Tabs */}
       <div>
         <label className="block text-xs font-semibold text-[#101010] uppercase tracking-wide mb-1.5">
           Select Workspace
@@ -41,7 +40,7 @@ export default function LoginForm() {
           <button
             type="button"
             onClick={() => setSelectedRoleHint('worker')}
-            className={`py-2 px-2 text-xs font-semibold rounded-lg transition-all duration-150 ${
+            className={`py-2 px-2 text-xs font-semibold rounded-lg transition-all duration-150 cursor-pointer ${
               selectedRoleHint === 'worker'
                 ? 'bg-white text-[#B8861B] shadow-sm'
                 : 'text-[#596174] hover:text-[#101010]'
@@ -52,7 +51,7 @@ export default function LoginForm() {
           <button
             type="button"
             onClick={() => setSelectedRoleHint('customer')}
-            className={`py-2 px-2 text-xs font-semibold rounded-lg transition-all duration-150 ${
+            className={`py-2 px-2 text-xs font-semibold rounded-lg transition-all duration-150 cursor-pointer ${
               selectedRoleHint === 'customer'
                 ? 'bg-white text-[#B8861B] shadow-sm'
                 : 'text-[#596174] hover:text-[#101010]'
@@ -63,7 +62,7 @@ export default function LoginForm() {
           <button
             type="button"
             onClick={() => setSelectedRoleHint('cooperativeAdmin')}
-            className={`py-2 px-2 text-xs font-semibold rounded-lg transition-all duration-150 ${
+            className={`py-2 px-2 text-xs font-semibold rounded-lg transition-all duration-150 cursor-pointer ${
               selectedRoleHint === 'cooperativeAdmin'
                 ? 'bg-white text-[#B8861B] shadow-sm'
                 : 'text-[#596174] hover:text-[#101010]'
@@ -74,7 +73,6 @@ export default function LoginForm() {
         </div>
       </div>
 
-      {/* Email / ID Input */}
       <div>
         <Input
           label="Email Address"
@@ -93,7 +91,6 @@ export default function LoginForm() {
         />
       </div>
 
-      {/* Password Input with show/hide toggle */}
       <div className="relative">
         <Input
           label="Password"
@@ -107,13 +104,12 @@ export default function LoginForm() {
         <button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-3 top-8 text-xs font-medium text-[#8A909F] hover:text-[#596174] transition-colors"
+          className="absolute right-3 top-8 text-xs font-medium text-[#8A909F] hover:text-[#596174] transition-colors cursor-pointer"
         >
           {showPassword ? 'Hide' : 'Show'}
         </button>
       </div>
 
-      {/* Remember Device & Forgot Password */}
       <div className="flex items-center justify-between text-xs pt-1">
         <label className="flex items-center gap-2 cursor-pointer text-[#596174] select-none">
           <input
@@ -127,13 +123,12 @@ export default function LoginForm() {
         <button
           type="button"
           onClick={() => alert('Password reset links are managed via your cooperative administrator.')}
-          className="text-[#B8861B] hover:text-[#A57412] font-semibold transition-colors"
+          className="text-[#B8861B] hover:text-[#A57412] font-semibold transition-colors cursor-pointer"
         >
           Forgot password?
         </button>
       </div>
 
-      {/* Error alert */}
       {error && (
         <div className="p-3 rounded-xl bg-[#FCE9E7] border border-[#F5C2BF] text-xs text-[#C2413B] font-medium flex items-center gap-2">
           <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,7 +138,6 @@ export default function LoginForm() {
         </div>
       )}
 
-      {/* Primary Gold Submit Button */}
       <div className="pt-2">
         <Button
           type="submit"

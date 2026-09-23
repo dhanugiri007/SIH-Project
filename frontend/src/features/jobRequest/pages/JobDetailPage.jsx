@@ -75,7 +75,6 @@ export default function JobDetailPage() {
           ← Back to my service requests
         </Link>
 
-        {/* Header Card */}
         <div className="p-6 md:p-8 bg-white border border-[#E8E5DE] rounded-2xl shadow-sahyog-card mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
             <h1 className="text-xl sm:text-2xl font-extrabold text-[#0A0A0D]">
@@ -95,7 +94,6 @@ export default function JobDetailPage() {
           </div>
         </div>
 
-        {/* Tasks Section */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-bold uppercase tracking-wider text-[#101010]">

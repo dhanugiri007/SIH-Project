@@ -49,7 +49,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -65,7 +64,6 @@ body {
   background: #B8861B;
 }
 
-/* Utility shadow classes */
 .shadow-sahyog-card {
   box-shadow: 0 8px 30px rgba(25, 20, 10, 0.045);
 }

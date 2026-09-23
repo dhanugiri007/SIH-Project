@@ -28,7 +28,6 @@ export default function JobTimeline({ jobId }) {
       <div className="relative pl-6 space-y-4 border-l border-[#E8E5DE] ml-2">
         {entries.map((e) => (
           <div key={e._id} className="relative group">
-            {/* Timeline node */}
             <span className="absolute -left-[31px] top-1 w-2.5 h-2.5 rounded-full bg-[#B8861B] border-2 border-white ring-2 ring-[#EED58C]" />
             <div>
               <div className="flex items-center gap-2">

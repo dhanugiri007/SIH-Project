@@ -45,7 +45,6 @@ function AdminDashboardInner() {
 
         <AnalyticsPanel analytics={analytics} />
 
-        {/* Tab switcher */}
         <div className="flex gap-4 mb-6 border-b border-[#E8E5DE]">
           {TABS.map((t) => (
             <button

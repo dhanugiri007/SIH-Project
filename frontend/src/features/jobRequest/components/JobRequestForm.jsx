@@ -21,7 +21,6 @@ export default function JobRequestForm() {
     }
   }, [transcript]);
 
-  // Once reverse geocoding resolves, fill the address field (only if user hasn't typed their own)
   useEffect(() => {
     if (resolvedAddress) {
       setAddress(resolvedAddress);
@@ -65,7 +64,6 @@ export default function JobRequestForm() {
         />
       </div>
 
-      {/* Voice Input Button */}
       <div className="flex items-center gap-3 mb-5">
         {supported ? (
           <button
@@ -85,7 +83,6 @@ export default function JobRequestForm() {
         )}
       </div>
 
-      {/* Address & Geolocation */}
       <div className="space-y-2 mb-5">
         <Input
           label="Service Destination Address"

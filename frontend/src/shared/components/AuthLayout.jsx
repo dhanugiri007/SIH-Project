@@ -9,25 +9,16 @@ export default function AuthLayout({
 }) {
   return (
     <div className="min-h-screen bg-[#FAF9F6] text-[#101010] flex flex-col selection:bg-[#FBECC5] selection:text-[#5C3C08]">
-      {/* Top Editorial Navbar */}
       <Navbar />
 
-      {/* Main Container */}
       <main className="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-12 py-8 lg:py-12 flex flex-col justify-center">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 xl:gap-16 items-start">
-          
-          {/* =========================================
-              LEFT COLUMN: Marketing Hero & Visuals (58-60%)
-             ========================================= */}
           <div className="lg:col-span-7 flex flex-col justify-center space-y-8 lg:pr-4">
-            
-            {/* Value Proposition Badge */}
             <div className="inline-flex items-center gap-2 self-start px-3.5 py-1.5 rounded-full border border-[#D5A63A] bg-[#FFF9E8]/80 text-[#80540B] text-xs font-semibold tracking-wide">
               <span className="w-1.5 h-1.5 rounded-full bg-[#B8861B]" />
               <span>Worker-Owned • Transparent Matching • Fair Work</span>
             </div>
 
-            {/* Hero Headline */}
             <div className="space-y-1">
               <h1 className="text-4xl sm:text-5xl lg:text-[62px] xl:text-[68px] font-extrabold tracking-[-0.035em] leading-[1.04] text-[#0A0A0D]">
                 Work together.
@@ -40,7 +31,6 @@ export default function AuthLayout({
               </p>
             </div>
 
-            {/* Primary Action Buttons */}
             <div className="flex flex-wrap items-center gap-3 pt-1">
               <Link
                 to="/signup"
@@ -60,14 +50,11 @@ export default function AuthLayout({
               </Link>
             </div>
 
-            {/* Visual Service Panels */}
             <div className="pt-4">
               <p className="text-xs font-bold uppercase tracking-wider text-[#8A909F] mb-3">
                 Cooperative Services & Dispatch Verticals
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-                
-                {/* Panel 1 */}
                 <div className="p-4 rounded-2xl bg-white border border-[#E8E5DE] hover:border-[#D5A63A] transition-all duration-200 shadow-sahyog-card flex flex-col justify-between group">
                   <div>
                     <div className="w-9 h-9 rounded-xl bg-[#FFF9E8] border border-[#EED58C] flex items-center justify-center text-[#B8861B] mb-3 group-hover:scale-105 transition-transform">
@@ -84,7 +71,6 @@ export default function AuthLayout({
                   </div>
                 </div>
 
-                {/* Panel 2 */}
                 <div className="p-4 rounded-2xl bg-white border border-[#E8E5DE] hover:border-[#D5A63A] transition-all duration-200 shadow-sahyog-card flex flex-col justify-between group">
                   <div>
                     <div className="w-9 h-9 rounded-xl bg-[#FFF9E8] border border-[#EED58C] flex items-center justify-center text-[#B8861B] mb-3 group-hover:scale-105 transition-transform">
@@ -101,7 +87,6 @@ export default function AuthLayout({
                   </div>
                 </div>
 
-                {/* Panel 3 */}
                 <div className="p-4 rounded-2xl bg-white border border-[#E8E5DE] hover:border-[#D5A63A] transition-all duration-200 shadow-sahyog-card flex flex-col justify-between group">
                   <div>
                     <div className="w-9 h-9 rounded-xl bg-[#FFF9E8] border border-[#EED58C] flex items-center justify-center text-[#B8861B] mb-3 group-hover:scale-105 transition-transform">
@@ -117,11 +102,9 @@ export default function AuthLayout({
                     <span>Real-time GPS</span>
                   </div>
                 </div>
-
               </div>
             </div>
 
-            {/* Feature & Value Indicators */}
             <div className="pt-2 border-t border-[#E8E5DE]">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4">
                 <div className="flex items-start gap-2.5">
@@ -173,16 +156,10 @@ export default function AuthLayout({
                 </div>
               </div>
             </div>
-
           </div>
 
-          {/* =========================================
-              RIGHT COLUMN: Cooperative Portal Card (40-42%)
-             ========================================= */}
           <div className="lg:col-span-5 w-full max-w-xl mx-auto lg:max-w-none">
             <div className="bg-white rounded-2xl sm:rounded-3xl border border-[#E8E5DE] p-6 sm:p-8 md:p-10 shadow-sahyog-card relative">
-              
-              {/* Card Top Indicator Bar */}
               <div className="flex items-center justify-between gap-2 pb-6 border-b border-[#F0EDE6] mb-6">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF9E8] border border-[#EED58C] text-[#80540B] text-[11px] font-bold uppercase tracking-wider">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#B8861B]" />
@@ -195,7 +172,6 @@ export default function AuthLayout({
                 </div>
               </div>
 
-              {/* Form Title & Context */}
               <div className="mb-6">
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0A0A0D] tracking-tight">
                   {title}
@@ -207,12 +183,10 @@ export default function AuthLayout({
                 )}
               </div>
 
-              {/* Form Body (LoginForm / SignupForm) */}
               <div>
                 {children}
               </div>
 
-              {/* Trust Badge Footer */}
               <div className="mt-6 pt-5 border-t border-[#F0EDE6] flex items-center justify-center gap-4 text-[11px] text-[#8A909F]">
                 <span className="flex items-center gap-1">
                   <svg className="w-3.5 h-3.5 text-[#16834B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -228,14 +202,11 @@ export default function AuthLayout({
                   Encrypted Session
                 </span>
               </div>
-
             </div>
           </div>
-
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="border-t border-[#E8E5DE] bg-[#FAF9F6] py-6 mt-8">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#596174]">
           <div className="flex items-center gap-2">

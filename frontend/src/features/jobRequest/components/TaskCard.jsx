@@ -66,7 +66,6 @@ export default function TaskCard({ task, onVerify, onCancel }) {
         )}
       </div>
 
-      {/* Transparent Dispatching Explanation Panel */}
       {showWhy && exp && (
         <div className="mb-3 text-xs bg-[#FFF9E8] border border-[#EED58C] rounded-xl p-3 text-[#5C3C08] space-y-1.5">
           <p className="font-medium text-[#80540B]">{exp.reason}</p>
@@ -80,7 +79,6 @@ export default function TaskCard({ task, onVerify, onCancel }) {
         </div>
       )}
 
-      {/* Completion Photo/Video Proof */}
       {proof && (
         <div className="mb-3 border border-[#E8E5DE] rounded-xl overflow-hidden bg-[#FAF9F6] p-2">
           <p className="text-[11px] font-bold uppercase tracking-wider text-[#596174] mb-1.5">
@@ -94,7 +92,6 @@ export default function TaskCard({ task, onVerify, onCancel }) {
         </div>
       )}
 
-      {/* Action Buttons */}
       <div className="flex gap-2.5">
         {canVerify(task) && (
           <button
