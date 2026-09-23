@@ -1,12 +1,13 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { WorkerTasksProvider, useWorkerTasksContext } from '../workerTasksContext';
 import { useJoinWorkCells } from '../../workcell/hooks/useJoinWorkCells';
 import { useLocationBroadcast } from '../hooks/useLocationBroadcast';
 import { useSocket } from '../../../shared/hooks/useSocket';
 import { workCellApiService } from '../../workcell/service/workCellApiService';
-import { useEffect, useState } from 'react';
 import AvailabilityToggle from '../components/AvailabilityToggle';
 import WorkerTaskCard from '../components/WorkerTaskCard';
+import NotificationBell from '../../notifications/components/NotificationBell';
 
 function WorkerDashboardInner() {
   const { tasks, loading, isOnline, toggle, startTask, completeTask, reportIssue } = useWorkerTasksContext();
@@ -33,7 +34,13 @@ function WorkerDashboardInner() {
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-semibold text-gray-900">My Tasks</h1>
-          <AvailabilityToggle isOnline={isOnline} onToggle={toggle} />
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+            <Link to="/worker/earnings" className="text-sm px-3 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
+              💰 Earnings
+            </Link>
+            <AvailabilityToggle isOnline={isOnline} onToggle={toggle} />
+          </div>
         </div>
 
         {loading && <p className="text-gray-500">Loading...</p>}

@@ -6,6 +6,7 @@ const { computeFairnessScore, recordAssignment } = require('./opportunityLedgerS
 const { solveAssignment } = require('./dispatchSolverClient');
 const { recalcJobStatus } = require('./jobStatusService');
 const { syncWorkCellForJob } = require('./workCellService');
+const { createNotification } = require('./notificationService');
 const logger = require('../utils/logger');
 
 const SKILL_MATCH_POINTS = 40;
@@ -120,6 +121,12 @@ async function dispatchTasksForJob(jobId, { taskIds, excludeWorkerIds = [] } = {
       await recordAssignment({
         task: task._id, job: jobId, worker: winningWorkerId,
         scoreBreakdown: winner.breakdown, eligibleWorkerCount: candidates.length,
+      });
+
+      await createNotification(winningWorkerId, 'task_assigned', {
+        title: 'New task assigned',
+        message: `You've been assigned "${task.title}"`,
+        job: jobId, task: task._id,
       });
 
       dispatched.push(task._id);

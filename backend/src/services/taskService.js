@@ -5,6 +5,7 @@ const { assertValidTransition, assertRoleCanPerform } = require('../utils/taskSt
 const { recalcJobStatus } = require('./jobStatusService');
 const { notifyTaskUpdate } = require('./workCellService');
 const { logEvent } = require('./timelineService');
+const { createNotification } = require('./notificationService');
 
 async function getTasksByJob(jobId) {
   return Task.find({ job: jobId }).populate('dependsOn', 'title tempId status').populate('assignedWorker', 'name phone');
@@ -73,6 +74,21 @@ async function updateTaskStatus(taskId, actorUser, nextStatus) {
   await notifyTaskUpdate(task.job._id, task._id, nextStatus);
   await logEvent({ jobId: task.job._id, taskId: task._id, actorId: actorUser._id, event: 'status_changed', fromStatus, toStatus: nextStatus });
 
+  if (actorUser.role === 'worker' && task.job.customer) {
+    await createNotification(task.job.customer, 'task_status_changed', {
+      title: `Task ${nextStatus.replace('_', ' ')}`,
+      message: `"${task.title}" is now ${nextStatus.replace('_', ' ')}.`,
+      job: task.job._id, task: task._id,
+    });
+  }
+  if (actorUser.role === 'customer' && task.assignedWorker) {
+    await createNotification(task.assignedWorker._id || task.assignedWorker, 'task_status_changed', {
+      title: `Task ${nextStatus.replace('_', ' ')}`,
+      message: `Customer marked "${task.title}" as ${nextStatus.replace('_', ' ')}.`,
+      job: task.job._id, task: task._id,
+    });
+  }
+
   return getTaskById(task._id);
 }
 
@@ -86,6 +102,11 @@ async function manualAssignWorker(taskId, workerUserId) {
   await task.save();
 
   await recalcJobStatus(task.job);
+  await createNotification(workerUserId, 'task_assigned', {
+    title: 'New task assigned',
+    message: `You've been assigned "${task.title}"`,
+    job: task.job, task: task._id,
+  });
 
   return getTaskById(task._id);
 }
