@@ -1,17 +1,18 @@
 const COLORS = {
-  cleaning: 'bg-sky-100 text-sky-700',
-  electrical: 'bg-amber-100 text-amber-700',
-  plumbing: 'bg-blue-100 text-blue-700',
-  carpentry: 'bg-orange-100 text-orange-700',
-  painting: 'bg-fuchsia-100 text-fuchsia-700',
-  appliance_repair: 'bg-emerald-100 text-emerald-700',
-  general: 'bg-gray-100 text-gray-700',
+  cleaning: 'bg-[#F5F2EB] text-[#596174] border-[#E8E5DE]',
+  electrical: 'bg-[#FFF9E8] text-[#80540B] border-[#EED58C]',
+  plumbing: 'bg-[#F5F2EB] text-[#303039] border-[#D8D2C4]',
+  carpentry: 'bg-[#FFF9E8] text-[#5C3C08] border-[#D5A63A]',
+  painting: 'bg-[#FAF9F6] text-[#80540B] border-[#EED58C]',
+  appliance_repair: 'bg-[#E8F8EF] text-[#16834B] border-[#A7E8C2]',
+  general: 'bg-[#FAF9F6] text-[#596174] border-[#E8E5DE]',
 };
 
 export default function TaskTypeBadge({ type }) {
+  const style = COLORS[type] || COLORS.general;
   return (
-    <span className={`text-xs font-medium px-2 py-0.5 rounded-full capitalize ${COLORS[type] || COLORS.general}`}>
-      {type.replace('_', ' ')}
+    <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${style} capitalize`}>
+      {type ? type.replace('_', ' ') : 'general'}
     </span>
   );
 }

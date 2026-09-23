@@ -1,1 +1,73 @@
 @import "tailwindcss";
+
+:root {
+  --background: #FAF9F6;
+  --background-secondary: #F5F2EB;
+  --surface: #FFFFFF;
+  --surface-soft: #FCFBF8;
+  --surface-hover: #F8F5EE;
+
+  --gold-50: #FFF9E8;
+  --gold-100: #FBECC5;
+  --gold-200: #EED58C;
+  --gold-300: #DDB85C;
+  --gold-400: #C99A32;
+  --gold-500: #B8861B;
+  --gold-600: #A57412;
+  --gold-700: #80540B;
+  --gold-800: #5C3C08;
+
+  --text-primary: #101010;
+  --text-heading: #0A0A0D;
+  --text-secondary: #596174;
+  --text-muted: #8A909F;
+  --text-inverse: #FFFFFF;
+
+  --border: #E8E5DE;
+  --border-light: #F0EDE6;
+  --border-gold: #D5A63A;
+
+  --success: #16834B;
+  --success-background: #E8F8EF;
+  --warning: #B7791F;
+  --error: #C2413B;
+  --error-background: #FCE9E7;
+
+  --shadow-card: 0 8px 30px rgba(25, 20, 10, 0.045);
+  --shadow-hover: 0 12px 36px rgba(25, 20, 10, 0.08);
+
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--background);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F5F2EB;
+}
+::-webkit-scrollbar-thumb {
+  background: #D8D2C4;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B8861B;
+}
+
+.shadow-sahyog-card {
+  box-shadow: 0 8px 30px rgba(25, 20, 10, 0.045);
+}
+
+.shadow-sahyog-hover {
+  box-shadow: 0 12px 36px rgba(25, 20, 10, 0.08);
+}

@@ -5,7 +5,7 @@ export default function WorkerLocationMap({ lat, lng }) {
   const src = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&marker=${lat},${lng}`;
 
   return (
-    <div className="rounded-lg overflow-hidden border border-gray-200 mt-2">
+    <div className="rounded-xl overflow-hidden border border-[#E8E5DE] mt-2 shadow-sm">
       <iframe title="Worker location" src={src} className="w-full h-48 border-0" loading="lazy" />
     </div>
   );

@@ -21,7 +21,6 @@ export default function JobRequestForm() {
     }
   }, [transcript]);
 
-  // Once reverse geocoding resolves, fill the address field (only if user hasn't typed their own)
   useEffect(() => {
     if (resolvedAddress) {
       setAddress(resolvedAddress);
@@ -40,68 +39,99 @@ export default function JobRequestForm() {
   };
 
   const locateLabel = {
-    idle: 'Use my current location',
-    locating: 'Getting your location...',
-    resolving: 'Finding address...',
-    done: 'Location captured',
-    error: 'Try again',
-  }[geoStatus];
+    idle: 'Auto-detect current location',
+    locating: 'Accessing GPS...',
+    resolving: 'Resolving address...',
+    done: 'Location pinned',
+    error: 'Retry location',
+  }[geoStatus] || 'Auto-detect current location';
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        Describe what you need done
-      </label>
-      <textarea
-        rows={4}
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 mb-3"
-        placeholder="e.g. My kitchen needs deep cleaning, a leaking tap fixed, and a wobbly cabinet hinge repaired"
-        value={text}
-        onChange={(e) => { setText(e.target.value); setUsedVoice(false); }}
-      />
+    <form onSubmit={handleSubmit} className="bg-white border border-[#E8E5DE] rounded-2xl p-6 md:p-8 shadow-sahyog-card">
+      <div className="mb-4">
+        <label className="block text-xs font-semibold text-[#101010] uppercase tracking-wide mb-1.5">
+          Describe the Work Needed
+        </label>
+        <p className="text-xs text-[#596174] mb-2.5">
+          Describe the requirements in natural language — our dispatch system will extract individual tasks and match certified cooperative workers.
+        </p>
+        <textarea
+          rows={4}
+          className="w-full px-3.5 py-2.5 bg-white border border-[#E8E5DE] rounded-xl text-sm text-[#101010] placeholder-[#9CA1AD] outline-none focus:ring-2 focus:ring-[#C99A32]/25 focus:border-[#C99A32] transition-colors leading-relaxed"
+          placeholder="e.g. Need kitchen exhaust fan repaired, switchboard short circuit fixed, and two water faucets replaced in the bathroom."
+          value={text}
+          onChange={(e) => { setText(e.target.value); setUsedVoice(false); }}
+        />
+      </div>
 
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-3 mb-5">
         {supported ? (
           <button
             type="button"
             onClick={listening ? stop : start}
-            className={`flex items-center gap-2 text-sm px-3 py-1.5 rounded-full border transition-colors ${
-              listening ? 'bg-red-50 border-red-300 text-red-600' : 'bg-indigo-50 border-indigo-200 text-indigo-600 hover:bg-indigo-100'
+            className={`inline-flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl border transition-all duration-150 cursor-pointer ${
+              listening
+                ? 'bg-[#FCE9E7] border-[#F5C2BF] text-[#C2413B] animate-pulse'
+                : 'bg-[#FFF9E8] border-[#EED58C] text-[#80540B] hover:bg-[#FBECC5]'
             }`}
           >
-            🎤 {listening ? 'Listening... tap to stop' : 'Speak instead'}
+            <span>🎙️</span>
+            <span>{listening ? 'Listening... click to finish' : 'Speak your request instead'}</span>
           </button>
         ) : (
-          <span className="text-xs text-gray-400">Voice input not supported in this browser</span>
+          <span className="text-xs text-[#8A909F]">Voice dictation not supported in this browser</span>
         )}
       </div>
 
-      <Input
-        label="Service address"
-        placeholder="House / street / area"
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-      />
+      <div className="space-y-2 mb-5">
+        <Input
+          label="Service Destination Address"
+          placeholder="House/Flat number, building, street, landmark"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+        />
 
-      <div className="flex items-center gap-2 mb-4">
-        <button
-          type="button"
-          onClick={locate}
-          disabled={geoStatus === 'locating' || geoStatus === 'resolving'}
-          className="text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-60"
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={locate}
+            disabled={geoStatus === 'locating' || geoStatus === 'resolving'}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-[#E8E5DE] bg-[#FAF9F6] text-[#596174] hover:text-[#101010] hover:border-[#D5A63A] transition-colors disabled:opacity-60 cursor-pointer"
+          >
+            <span>📍</span>
+            <span>{locateLabel}</span>
+          </button>
+          {geoStatus === 'error' && (
+            <span className="text-xs text-[#C2413B] font-medium">{geoError || 'Could not fetch GPS coords'} — please type address manually</span>
+          )}
+          {geoStatus === 'done' && (
+            <span className="text-xs text-[#16834B] font-medium flex items-center gap-1">
+              ✓ GPS verified
+            </span>
+          )}
+        </div>
+      </div>
+
+      {error && (
+        <div className="p-3 rounded-xl bg-[#FCE9E7] border border-[#F5C2BF] text-xs text-[#C2413B] font-medium mb-4">
+          {error}
+        </div>
+      )}
+
+      <div className="pt-2 border-t border-[#F0EDE6]">
+        <Button
+          type="submit"
+          variant="primary"
+          disabled={submitting || !text.trim()}
+          iconRight={
+            <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          }
         >
-          📍 {locateLabel}
-        </button>
-        {geoStatus === 'error' && (
-          <span className="text-xs text-red-500">{geoError || 'Could not get location'} — you can still type it manually</span>
-        )}
+          {submitting ? 'Analyzing & Decomposing Tasks...' : 'Submit & Find Cooperative Workers'}
+        </Button>
       </div>
-
-      {error && <p className="text-sm text-red-500 mb-3">{error}</p>}
-
-      <Button type="submit" disabled={submitting || !text.trim()}>
-        {submitting ? 'Understanding & dispatching...' : 'Generate Job Plan'}
-      </Button>
     </form>
   );
 }
